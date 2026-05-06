@@ -3592,7 +3592,107 @@ function openModal(key) {
 function renderAll() { renderStats(); renderCalendar(); }
 function scrollToToday() { const el = document.querySelector(".day-card.today"); if (el) el.scrollIntoView({ behavior: "smooth", block: "center" }); }
 
-// EXPORT / IMPORT per sync cross-device
+// ─── SYNC AUTOMATICO via GitHub Gist ──────────────────
+const GIST_FILENAME = "progress.json";
+const GIST_DESC = "percorso-crescita-2026";
+
+function getToken() { return localStorage.getItem("ghToken"); }
+function getGistId() { return localStorage.getItem("gistId"); }
+
+async function ghRequest(url, method, body) {
+  const token = getToken();
+  if (!token) return null;
+  const opts = { method, headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" } };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(url, opts);
+  return res.ok ? res.json() : null;
+}
+
+async function findOrCreateGist() {
+  let gistId = getGistId();
+  if (gistId) {
+    const gist = await ghRequest("https://api.github.com/gists/" + gistId, "GET");
+    if (gist) return gist;
+  }
+  // Search existing gists
+  const gists = await ghRequest("https://api.github.com/gists?per_page=100", "GET");
+  if (gists) {
+    for (const g of gists) {
+      if (g.description === GIST_DESC && g.files && g.files[GIST_FILENAME]) {
+        localStorage.setItem("gistId", g.id);
+        return g;
+      }
+    }
+  }
+  // Create new secret gist
+  const created = await ghRequest("https://api.github.com/gists", "POST", {
+    description: GIST_DESC, public: false,
+    files: { [GIST_FILENAME]: { content: "{}" } }
+  });
+  if (created) {
+    localStorage.setItem("gistId", created.id);
+    return created;
+  }
+  return null;
+}
+
+async function syncFromGist() {
+  if (!getToken()) return;
+  const gist = await findOrCreateGist();
+  if (!gist || !gist.files || !gist.files[GIST_FILENAME]) return;
+  try {
+    const remote = JSON.parse(gist.files[GIST_FILENAME].content || "{}");
+    let merged = 0;
+    for (const [k, v] of Object.entries(remote)) {
+      if (scheduleByKey[k]) {
+        const local = scheduleByKey[k];
+        // Track last-modified timestamp per entry (stored in notes...)
+        // For simplicity: remote wins if both have data, merge otherwise
+        if (!local.completed && v.completed) { local.completed = true; merged++; }
+        if (!local.notes && v.notes) { local.notes = v.notes; merged++; }
+        if (v.completed && !local.completed) { local.completed = true; merged++; }
+        if (v.notes && v.notes !== local.notes) { local.notes = local.notes ? local.notes : v.notes; }
+      }
+    }
+    saveStateLocally();
+    return merged;
+  } catch (e) { return 0; }
+}
+
+async function syncToGist() {
+  if (!getToken() || !getGistId()) return;
+  const data = {};
+  for (const e of schedule) { if (e.completed || e.notes) data[e.key] = { completed: e.completed, notes: e.notes }; }
+  await ghRequest("https://api.github.com/gists/" + getGistId(), "PATCH", {
+    files: { [GIST_FILENAME]: { content: JSON.stringify(data) } }
+  });
+}
+
+function saveStateLocally() {
+  const data = {};
+  for (const e of schedule) { if (e.completed || e.notes) data[e.key] = { completed: e.completed, notes: e.notes }; }
+  localStorage.setItem(LS_KEY, JSON.stringify(data));
+}
+
+function saveState() {
+  saveStateLocally();
+  syncToGist(); // fire and forget
+}
+
+async function setupToken() {
+  if (getToken()) return true;
+  const token = prompt("Inserisci il tuo GitHub Personal Access Token (serve per sincronizzare i progressi tra dispositivi).\n\nIl token deve avere lo scope 'gist'.\nCreane uno qui: https://github.com/settings/tokens/new\n\nLascia vuoto per usare solo il salvataggio locale.");
+  if (!token || !token.trim()) return false;
+  localStorage.setItem("ghToken", token.trim());
+  return true;
+}
+
+function showSyncStatus(msg, isGood) {
+  const el = document.getElementById("syncStatus");
+  if (el) { el.textContent = msg; el.style.color = isGood ? "var(--green)" : "var(--red)"; }
+}
+
+// EXPORT / IMPORT manuali (backup)
 function exportData() {
   const data = {};
   for (const e of schedule) { if (e.completed || e.notes) data[e.key] = { completed: e.completed, notes: e.notes }; }
@@ -3625,7 +3725,22 @@ function importData() {
 
 // INIT
 document.getElementById("modalOverlay").onclick = (ev) => { if (ev.target === ev.currentTarget) ev.currentTarget.style.display = "none"; };
-loadState(); renderFilters(); renderAll();
+loadState();
+(async () => {
+  if (await setupToken()) {
+    showSyncStatus("Sync in corso...", true);
+    const merged = await syncFromGist();
+    if (merged !== null) {
+      showSyncStatus(merged > 0 ? "Sincronizzato!" : "Nessuna novità dal cloud", true);
+      if (merged > 0) { renderAll(); return; }
+    } else {
+      showSyncStatus("Sync non riuscito", false);
+    }
+  } else {
+    showSyncStatus("Solo locale", true);
+  }
+  renderFilters(); renderAll();
+})();
 document.getElementById("filterTopic").onchange = renderCalendar;
 document.getElementById("filterStatus").onchange = renderCalendar;
 document.getElementById("searchNotes").oninput = renderCalendar;
