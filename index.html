@@ -1,0 +1,3752 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Percorso di Crescita 2026</title>
+<style>
+:root{--bg:#0a0a14;--surface:#141428;--surface2:#1c1c38;--text:#e0e0e0;--text2:#999;--accent:#6c5ce7;--green:#00d2a0;--red:#ff6b6b;--border:#2a2a4a;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
+.container{max-width:1100px;margin:0 auto;padding:16px}
+header{background:var(--surface);border-radius:var(--radius);padding:24px;margin-bottom:20px;border:1px solid var(--border);box-shadow:var(--shadow)}
+header h1{font-size:1.6rem;font-weight:700;margin-bottom:4px}
+header .subtitle{color:var(--text2);font-size:.9rem}
+.stats-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+.stat-card{flex:1;min-width:100px;background:var(--surface2);border-radius:10px;padding:14px 16px;text-align:center;border:1px solid var(--border)}
+.stat-card .value{font-size:1.8rem;font-weight:700;color:var(--accent)}
+.stat-card .label{font-size:.75rem;color:var(--text2);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.progress-wrap{margin-top:16px}
+.progress-wrap .label-row{display:flex;justify-content:space-between;font-size:.8rem;color:var(--text2);margin-bottom:6px}
+.progress-bar{height:8px;background:var(--surface2);border-radius:10px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:10px;transition:width .4s ease}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.controls select,.controls input{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;font-size:.85rem;outline:none}
+.controls select:focus,.controls input:focus{border-color:var(--accent)}
+.controls input{min-width:180px}
+.btn{background:var(--accent);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:.85rem;cursor:pointer;font-weight:600;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-sm{padding:5px 10px;font-size:.78rem}
+.month-section{margin-bottom:24px}
+.month-header{font-size:1.1rem;font-weight:700;color:var(--text2);margin-bottom:10px;padding-left:4px;text-transform:uppercase;letter-spacing:1px}
+.day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.dow-label{text-align:center;font-size:.7rem;color:var(--text2);padding:4px 0;text-transform:uppercase;letter-spacing:.5px}
+.day-card{aspect-ratio:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.8rem;transition:all .2s;position:relative;overflow:hidden;color:var(--text2);user-select:none;padding:4px}
+.day-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 12px rgba(108,92,231,.25)}
+.day-card.today{border-color:var(--accent);border-width:2px;box-shadow:0 0 16px rgba(108,92,231,.3)}
+.day-card.completed{background:var(--surface2);border-color:var(--green)}
+.day-card.completed::after{content:"\2713";position:absolute;top:4px;right:6px;font-size:.7rem;color:var(--green);font-weight:700}
+.day-card .day-num{font-size:1rem;font-weight:700;color:var(--text)}
+.day-card .topic-icon{font-size:1rem;margin-top:1px}
+.day-card .topic-tag{font-size:.52rem;color:var(--text2);text-align:center;line-height:1.15;margin-top:1px;padding:0 2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word}
+.day-card.placeholder{background:transparent;border:none;cursor:default;pointer-events:none}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.modal{background:var(--surface);border-radius:var(--radius);padding:28px;width:100%;max-width:540px;max-height:85vh;overflow-y:auto;border:1px solid var(--border);box-shadow:var(--shadow);animation:modalIn .25s ease}
+@keyframes modalIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal h2{font-size:1.25rem;margin-bottom:2px}
+.modal .modal-date{color:var(--text2);font-size:.85rem;margin-bottom:12px}
+.modal .modal-topic{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);padding:6px 14px;border-radius:20px;font-size:.85rem;font-weight:600;margin-bottom:10px}
+.modal .modal-subtopic{font-size:1rem;font-weight:600;color:var(--text);margin-bottom:4px;padding:8px 0}
+.modal .modal-desc{font-size:.82rem;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.modal label{display:block;font-size:.8rem;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.modal textarea{width:100%;height:100px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:12px;font-family:inherit;font-size:.85rem;resize:vertical;outline:none}
+.modal textarea:focus{border-color:var(--accent)}
+.modal .suggestions{margin-top:12px;background:var(--surface2);border-radius:8px;padding:12px}
+.modal .suggestions h4{font-size:.8rem;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.modal .suggestions .res-item{font-size:.8rem;margin-bottom:6px;display:flex;gap:8px;align-items:flex-start}
+.modal .suggestions .res-icon{flex-shrink:0}
+.modal .suggestions .yt-link{display:inline-block;color:var(--accent);font-size:.8rem;margin-top:6px;text-decoration:none}
+.modal .suggestions .yt-link:hover{text-decoration:underline}
+.modal .actions{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
+.check-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;cursor:pointer}
+.check-row input[type=checkbox]{width:20px;height:20px;accent-color:var(--green);cursor:pointer}
+.check-row span{font-size:.9rem}
+footer{text-align:center;color:var(--text2);font-size:.75rem;padding:24px 0}
+.scroll-today{position:fixed;bottom:20px;right:20px;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 16px rgba(108,92,231,.5);z-index:50;display:flex;align-items:center;justify-content:center;transition:transform .2s}
+.scroll-today:hover{transform:scale(1.1)}
+@media(max-width:640px){
+  .day-grid{grid-template-columns:repeat(4,1fr);gap:5px}
+  .day-card{aspect-ratio:auto;padding:6px 3px;min-height:58px}
+  .day-card .topic-icon{font-size:.85rem}
+  .day-card .topic-tag{font-size:.48rem;-webkit-line-clamp:1}
+  .stats-row{gap:8px}
+  .stat-card{min-width:70px;padding:10px}
+  .stat-card .value{font-size:1.3rem}
+  header{padding:16px}
+  header h1{font-size:1.3rem}
+  .modal{padding:20px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>Percorso di Crescita 2026</h1>
+  <div class="subtitle">6 Maggio &rarr; 31 Dicembre 2026 &middot; 240 giorni &middot; Un micro-topic progressivo al giorno</div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="value" id="statDone">0</div><div class="label">Completati</div></div>
+    <div class="stat-card"><div class="value" id="statPct">0%</div><div class="label">Progresso</div></div>
+    <div class="stat-card"><div class="value" id="statStreak">0</div><div class="label">Streak</div></div>
+    <div class="stat-card"><div class="value" id="statToday">&mdash;</div><div class="label">Oggi</div></div>
+  </div>
+  <div class="progress-wrap">
+    <div class="label-row"><span>Progresso complessivo</span><span id="progressLabel">0 / 240</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+</header>
+<div class="controls">
+  <select id="filterTopic"><option value="all">Tutti i topic</option></select>
+  <select id="filterStatus"><option value="all">Tutti</option><option value="completed">Completati</option><option value="pending">Da fare</option></select>
+  <input type="text" id="searchNotes" placeholder="Cerca nelle note..." />
+  <button class="btn btn-outline btn-sm" id="btnExport" onclick="exportData()" title="Scarica i progressi come file JSON">Esporta</button>
+  <button class="btn btn-outline btn-sm" id="btnImport" onclick="importData()" title="Carica progressi da file JSON">Importa</button>
+  <button class="btn btn-outline btn-sm" id="btnReset">Reset</button>
+</div>
+<div id="calendar"></div>
+<footer>Percorso di Crescita 2026 &middot; Salvataggio locale &middot; Nessun dato inviato a server</footer>
+</div>
+<button class="scroll-today" id="btnScrollToday" title="Vai a oggi">Oggi</button>
+<div class="modal-overlay" id="modalOverlay" style="display:none"></div>
+<script>
+// TOPICS DATA
+const TOPICS = [
+  {
+    "id": "ai",
+    "icon": "🤖",
+    "name": "AI & Strumenti per Sviluppatori",
+    "color": "#4A90D9",
+    "short": "AI & Dev",
+    "curriculum": [
+      {
+        "sub": "GitHub Copilot avanzato",
+        "desc": "Chat, agent mode, workspace context, test gen.",
+        "res": [
+          {
+            "t": "Copilot Mastery (EN)",
+            "u": "https://www.youtube.com/results?search_query=github+copilot+advanced+2025"
+          },
+          {
+            "t": "Copilot - Morrolinux (IT)",
+            "u": "https://www.youtube.com/results?search_query=morrolinux+copilot+github"
+          }
+        ]
+      },
+      {
+        "sub": "Cursor IDE e AI-first coding",
+        "desc": "Tab completion, inline chat, composer, rules.",
+        "res": [
+          {
+            "t": "Cursor AI Tutorial (EN)",
+            "u": "https://www.youtube.com/results?search_query=cursor+ide+tutorial+2025"
+          },
+          {
+            "t": "Cursor vs Windsurf (EN)",
+            "u": "https://www.youtube.com/results?search_query=cursor+vs+copilot+vs+windsurf+2026"
+          }
+        ]
+      },
+      {
+        "sub": "Prompt Engineering per dev",
+        "desc": "Prompt per codice, refactoring, debugging.",
+        "res": [
+          {
+            "t": "Prompt Engineering for Devs (EN)",
+            "u": "https://www.youtube.com/results?search_query=prompt+engineering+developers+2025"
+          },
+          {
+            "t": "Prompt Engineering ITA",
+            "u": "https://www.youtube.com/results?search_query=prompt+engineering+spiegazione+italiano"
+          }
+        ]
+      },
+      {
+        "sub": "OpenAI API: modelli e costi",
+        "desc": "GPT-4o, o1, o3-mini: pricing, token optimization.",
+        "res": [
+          {
+            "t": "OpenAI API Crash Course (EN)",
+            "u": "https://www.youtube.com/results?search_query=openai+api+crash+course+2025"
+          },
+          {
+            "t": "ChatGPT API guida (IT)",
+            "u": "https://www.youtube.com/results?search_query=chatgpt+api+guida+italiano+openai"
+          }
+        ]
+      },
+      {
+        "sub": "LangChain e RAG",
+        "desc": "RAG: sistema che risponde sui tuoi dati.",
+        "res": [
+          {
+            "t": "LangChain RAG Tutorial (EN)",
+            "u": "https://www.youtube.com/results?search_query=langchain+rag+tutorial+2025"
+          },
+          {
+            "t": "RAG spiegazione ITA",
+            "u": "https://www.youtube.com/results?search_query=retrieval+augmented+generation+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Agenti AI autonomi",
+        "desc": "CrewAI, AutoGPT, Semantic Kernel agents.",
+        "res": [
+          {
+            "t": "CrewAI Multi-Agent (EN)",
+            "u": "https://www.youtube.com/results?search_query=crewai+tutorial+multi+agent+2025"
+          },
+          {
+            "t": "Agenti AI spiegati (IT)",
+            "u": "https://www.youtube.com/results?search_query=agenti+intelligenza+artificiale+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "AI per code review e testing",
+        "desc": "CodeRabbit, test automatici con AI.",
+        "res": [
+          {
+            "t": "AI Code Review Tools (EN)",
+            "u": "https://www.youtube.com/results?search_query=ai+code+review+tools+2025"
+          },
+          {
+            "t": "Code review con AI (IT)",
+            "u": "https://www.youtube.com/results?search_query=code+review+intelligenza+artificiale"
+          }
+        ]
+      },
+      {
+        "sub": "Modelli locali: Ollama & LM Studio",
+        "desc": "LLM in locale: privacy, zero costi API.",
+        "res": [
+          {
+            "t": "Ollama Tutorial (EN)",
+            "u": "https://www.youtube.com/results?search_query=ollama+tutorial+2025+local+llm"
+          },
+          {
+            "t": "Ollama guida italiana (IT)",
+            "u": "https://www.youtube.com/results?search_query=ollama+guida+italiano+locale"
+          }
+        ]
+      },
+      {
+        "sub": "AI + .NET: Semantic Kernel",
+        "desc": "Integrare AI in .NET: plugin, planner, memoria.",
+        "res": [
+          {
+            "t": "Semantic Kernel .NET (EN)",
+            "u": "https://www.youtube.com/results?search_query=semantic+kernel+.net+tutorial+2025"
+          },
+          {
+            "t": ".NET e AI ITA",
+            "u": "https://www.youtube.com/results?search_query=caffe+digitale+dotnet+intelligenza+artificiale"
+          }
+        ]
+      },
+      {
+        "sub": "Vector Databases",
+        "desc": "Pinecone, Qdrant, pgvector: ricerca semantica.",
+        "res": [
+          {
+            "t": "Vector Databases Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=vector+database+explained+2025"
+          },
+          {
+            "t": "Database vettoriali (IT)",
+            "u": "https://www.youtube.com/results?search_query=database+vettoriali+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Fine-tuning modelli",
+        "desc": "Fine-tuning vs RAG, dataset, costi.",
+        "res": [
+          {
+            "t": "Fine-tuning LLMs (EN)",
+            "u": "https://www.youtube.com/results?search_query=fine+tuning+llm+guide+2025"
+          },
+          {
+            "t": "Fine-tuning modelli (IT)",
+            "u": "https://www.youtube.com/results?search_query=fine+tuning+modelli+intelligenza+artificiale"
+          }
+        ]
+      },
+      {
+        "sub": "AI per documentazione",
+        "desc": "README, API docs, changelog automatici.",
+        "res": [
+          {
+            "t": "Mintlify e AI docs (EN)",
+            "u": "https://www.youtube.com/results?search_query=ai+documentation+generator+2025"
+          },
+          {
+            "t": "Documentazione automatica (IT)",
+            "u": "https://www.youtube.com/results?search_query=documentazione+automatica+intelligenza+artificiale"
+          }
+        ]
+      },
+      {
+        "sub": "Automazione workflow con AI",
+        "desc": "n8n, Make, Zapier + LLM.",
+        "res": [
+          {
+            "t": "n8n AI automation (EN)",
+            "u": "https://www.youtube.com/results?search_query=n8n+ai+automation+tutorial+2025"
+          },
+          {
+            "t": "n8n guida ITA",
+            "u": "https://www.youtube.com/results?search_query=n8n+guida+italiano+automazione"
+          }
+        ]
+      },
+      {
+        "sub": "AI nel cloud: Azure & AWS",
+        "desc": "Azure AI, AWS Bedrock: costi, integrazione.",
+        "res": [
+          {
+            "t": "Azure AI Services (EN)",
+            "u": "https://www.youtube.com/results?search_query=azure+ai+services+overview+2025"
+          },
+          {
+            "t": "AI su Azure ITA",
+            "u": "https://www.youtube.com/results?search_query=microsoft+italia+azure+ai+servizi"
+          }
+        ]
+      },
+      {
+        "sub": "Function Calling & Tool Use",
+        "desc": "LLM che chiamano API: OpenAI function calling.",
+        "res": [
+          {
+            "t": "OpenAI Function Calling (EN)",
+            "u": "https://www.youtube.com/results?search_query=openai+function+calling+tutorial+2025"
+          },
+          {
+            "t": "Function calling ITA",
+            "u": "https://www.youtube.com/results?search_query=function+calling+openai+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Multi-modal AI",
+        "desc": "GPT-4o: vision, audio, video understanding.",
+        "res": [
+          {
+            "t": "GPT-4o Multi-modal (EN)",
+            "u": "https://www.youtube.com/results?search_query=gpt4o+multimodal+demo+2025"
+          },
+          {
+            "t": "AI multimodale ITA",
+            "u": "https://www.youtube.com/results?search_query=intelligenza+artificiale+multimodale"
+          }
+        ]
+      },
+      {
+        "sub": "AI Agents framework",
+        "desc": "LangGraph, CrewAI: orchestrazione multi-agente.",
+        "res": [
+          {
+            "t": "LangGraph tutorial (EN)",
+            "u": "https://www.youtube.com/results?search_query=langgraph+tutorial+2025"
+          },
+          {
+            "t": "Agenti AI autonomi (IT)",
+            "u": "https://www.youtube.com/results?search_query=agenti+intelligenza+artificiale+autonomi"
+          }
+        ]
+      },
+      {
+        "sub": "AI cost optimization",
+        "desc": "Caching, batching, model routing, prompt compression.",
+        "res": [
+          {
+            "t": "Reduce LLM Costs (EN)",
+            "u": "https://www.youtube.com/results?search_query=reduce+llm+api+costs+2025"
+          },
+          {
+            "t": "Ottimizzare costi AI (IT)",
+            "u": "https://www.youtube.com/results?search_query=ottimizzare+costi+api+intelligenza+artificiale"
+          }
+        ]
+      },
+      {
+        "sub": "AI Security & Safety",
+        "desc": "Prompt injection, OWASP LLM Top 10.",
+        "res": [
+          {
+            "t": "OWASP LLM Top 10 (EN)",
+            "u": "https://www.youtube.com/results?search_query=owasp+llm+top+10+2025"
+          },
+          {
+            "t": "Sicurezza AI (IT)",
+            "u": "https://www.youtube.com/results?search_query=sicurezza+intelligenza+artificiale+prompt+injection"
+          }
+        ]
+      },
+      {
+        "sub": "Local AI stack completo",
+        "desc": "Ollama + Open WebUI + n8n + Qdrant.",
+        "res": [
+          {
+            "t": "Local AI Stack (EN)",
+            "u": "https://www.youtube.com/results?search_query=local+ai+stack+ollama+open+webui+2025"
+          },
+          {
+            "t": "AI in locale ITA",
+            "u": "https://www.youtube.com/results?search_query=ollama+open+webui+guida+italiano"
+          }
+        ]
+      },
+      {
+        "sub": "AI nello sviluppo Angular",
+        "desc": "AI per componenti, test; Angular signals.",
+        "res": [
+          {
+            "t": "Angular AI tools (EN)",
+            "u": "https://www.youtube.com/results?search_query=angular+ai+development+2025"
+          },
+          {
+            "t": "Angular sviluppo ITA",
+            "u": "https://www.youtube.com/results?search_query=angular+sviluppo+guida+italiano+2025"
+          }
+        ]
+      },
+      {
+        "sub": "AI nello sviluppo .NET",
+        "desc": "Microsoft.Extensions.AI, Copilot VS 2022.",
+        "res": [
+          {
+            "t": "Microsoft.Extensions.AI (EN)",
+            "u": "https://www.youtube.com/results?search_query=microsoft+extensions+ai+.net+9"
+          },
+          {
+            "t": ".NET 9 novita ITA",
+            "u": "https://www.youtube.com/results?search_query=jakidale+.net+9+novita+2025"
+          }
+        ]
+      },
+      {
+        "sub": "Training distribuito e ML",
+        "desc": "GPU training, PyTorch base, ML oltre LLM.",
+        "res": [
+          {
+            "t": "PyTorch explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=pytorch+explained+100+seconds"
+          },
+          {
+            "t": "ML base ITA",
+            "u": "https://www.youtube.com/results?search_query=machine+learning+spiegazione+base+italiano"
+          }
+        ]
+      },
+      {
+        "sub": "Trend AI 2026 e futuro",
+        "desc": "Agenti autonomi, AI nei device, AGI timeline.",
+        "res": [
+          {
+            "t": "AI Trends 2026 (EN)",
+            "u": "https://www.youtube.com/results?search_query=ai+trends+2026+predictions"
+          },
+          {
+            "t": "Futuro AI ITA",
+            "u": "https://www.youtube.com/results?search_query=futuro+intelligenza+artificiale+2026+italiano"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "history",
+    "icon": "📜",
+    "name": "Storia - Dalla Preistoria a Oggi",
+    "color": "#D9743B",
+    "short": "Storia",
+    "curriculum": [
+      {
+        "sub": "Preistoria e dinosauri",
+        "desc": "Era mesozoica, estinzione K-T, evoluzione umana.",
+        "res": [
+          {
+            "t": "Kurzgesagt Evolution (EN)",
+            "u": "https://www.youtube.com/results?search_query=kurzgesagt+evolution+human"
+          },
+          {
+            "t": "Nova Lectio Preistoria (IT)",
+            "u": "https://www.youtube.com/results?search_query=nova+lectio+preistoria+evoluzione+umana"
+          }
+        ]
+      },
+      {
+        "sub": "Prime civilta: Mesopotamia",
+        "desc": "Sumeri, cuneiforme, Codice Hammurabi.",
+        "res": [
+          {
+            "t": "Mesopotamia Nova Lectio (IT)",
+            "u": "https://www.youtube.com/results?search_query=nova+lectio+mesopotamia+sumeri"
+          },
+          {
+            "t": "Kings Generals Mesopotamia (EN)",
+            "u": "https://www.youtube.com/results?search_query=kings+and+generals+mesopotamia"
+          }
+        ]
+      },
+      {
+        "sub": "Antico Egitto",
+        "desc": "Faraoni, piramidi, Nilo, mummificazione.",
+        "res": [
+          {
+            "t": "Antico Egitto Nova Lectio (IT)",
+            "u": "https://www.youtube.com/results?search_query=nova+lectio+antico+egitto+faraoni"
+          },
+          {
+            "t": "Egypt Oversimplified (EN)",
+            "u": "https://www.youtube.com/results?search_query=oversimplified+ancient+egypt"
+          }
+        ]
+      },
+      {
+        "sub": "Antica Grecia",
+        "desc": "Polis, democrazia, Sparta, Alessandro Magno.",
+        "res": [
+          {
+            "t": "Ancient Greece Kings Generals (EN)",
+            "u": "https://www.youtube.com/results?search_query=ancient+greece+documentary"
+          },
+          {
+            "t": "Alessandro Magno Barbero (IT)",
+            "u": "https://www.youtube.com/results?search_query=alessandro+barbero+alessandro+magno"
+          }
+        ]
+      },
+      {
+        "sub": "Impero Romano: ascesa",
+        "desc": "Dalla Repubblica all'Impero, Cesare, Augusto.",
+        "res": [
+          {
+            "t": "Historia Civilis Rome (EN)",
+            "u": "https://www.youtube.com/results?search_query=historia+civilis+roman+empire"
+          },
+          {
+            "t": "Barbero Impero Romano (IT)",
+            "u": "https://www.youtube.com/results?search_query=alessandro+barbero+impero+romano+ascesa"
+          }
+        ]
+      },
+      {
+        "sub": "Impero Romano: caduta",
+        "desc": "Crisi III secolo, invasioni barbariche, 476.",
+        "res": [
+          {
+            "t": "Fall of Rome explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=fall+of+rome+explained+history"
+          },
+          {
+            "t": "Barbero Caduta Roma (IT)",
+            "u": "https://www.youtube.com/results?search_query=alessandro+barbero+caduta+impero+romano"
+          }
+        ]
+      },
+      {
+        "sub": "Medioevo: feudalesimo",
+        "desc": "Sistema feudale, castelli, cavalieri, monachesimo.",
+        "res": [
+          {
+            "t": "Medieval Europe Documentary (EN)",
+            "u": "https://www.youtube.com/results?search_query=medieval+europe+documentary"
+          },
+          {
+            "t": "Barbero Medioevo (IT)",
+            "u": "https://www.youtube.com/results?search_query=alessandro+barbero+medioevo+feudalesimo"
+          }
+        ]
+      },
+      {
+        "sub": "Crociate e ordini cavallereschi",
+        "desc": "Le crociate, Templari, Saladino.",
+        "res": [
+          {
+            "t": "Crusades Kings Generals (EN)",
+            "u": "https://www.youtube.com/results?search_query=crusades+full+documentary"
+          },
+          {
+            "t": "Barbero Crociate (IT)",
+            "u": "https://www.youtube.com/results?search_query=alessandro+barbero+crociate"
+          }
+        ]
+      },
+      {
+        "sub": "Rinascimento italiano",
+        "desc": "Firenze, Medici, Leonardo, Michelangelo.",
+        "res": [
+          {
+            "t": "Rinascimento Nova Lectio (IT)",
+            "u": "https://www.youtube.com/results?search_query=nova+lectio+rinascimento+italiano"
+          },
+          {
+            "t": "Medici Family Documentary (EN)",
+            "u": "https://www.youtube.com/results?search_query=medici+family+documentary+renaissance"
+          }
+        ]
+      },
+      {
+        "sub": "Scoperte geografiche",
+        "desc": "Colombo, Vasco da Gama, Magellano.",
+        "res": [
+          {
+            "t": "Age of Exploration (EN)",
+            "u": "https://www.youtube.com/results?search_query=age+of+exploration+documentary"
+          },
+          {
+            "t": "Nova Lectio Scoperte (IT)",
+            "u": "https://www.youtube.com/results?search_query=nova+lectio+scoperte+geografiche"
+          }
+        ]
+      },
+      {
+        "sub": "Riforma protestante",
+        "desc": "Lutero, 95 tesi, Calvino, Controriforma.",
+        "res": [
+          {
+            "t": "Reformation Oversimplified (EN)",
+            "u": "https://www.youtube.com/results?search_query=reformation+oversimplified"
+          },
+          {
+            "t": "Nova Lectio Lutero (IT)",
+            "u": "https://www.youtube.com/results?search_query=nova+lectio+martin+lutero+riforma"
+          }
+        ]
+      },
+      {
+        "sub": "Rivoluzione scientifica",
+        "desc": "Galileo, Newton, metodo scientifico.",
+        "res": [
+          {
+            "t": "Scientific Revolution (EN)",
+            "u": "https://www.youtube.com/results?search_query=scientific+revolution+explained"
+          },
+          {
+            "t": "Barbero Galileo (IT)",
+            "u": "https://www.youtube.com/results?search_query=alessandro+barbero+galileo+galilei"
+          }
+        ]
+      },
+      {
+        "sub": "Illuminismo",
+        "desc": "Voltaire, Rousseau, Montesquieu, diritti naturali.",
+        "res": [
+          {
+            "t": "Enlightenment explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=age+of+enlightenment+explained"
+          },
+          {
+            "t": "Illuminismo doc ITA",
+            "u": "https://www.youtube.com/results?search_query=illuminismo+spiegazione+voltaire"
+          }
+        ]
+      },
+      {
+        "sub": "Rivoluzione francese",
+        "desc": "1789, Robespierre, Terrore, Napoleone.",
+        "res": [
+          {
+            "t": "French Revolution Oversimplified (EN)",
+            "u": "https://www.youtube.com/results?search_query=french+revolution+oversimplified"
+          },
+          {
+            "t": "Barbero Napoleone (IT)",
+            "u": "https://www.youtube.com/results?search_query=alessandro+barbero+napoleone"
+          }
+        ]
+      },
+      {
+        "sub": "Rivoluzione industriale",
+        "desc": "Macchina a vapore, ferrovie, urbanizzazione.",
+        "res": [
+          {
+            "t": "Industrial Revolution (EN)",
+            "u": "https://www.youtube.com/results?search_query=industrial+revolution+explained"
+          },
+          {
+            "t": "Rivoluzione industriale ITA",
+            "u": "https://www.youtube.com/results?search_query=rivoluzione+industriale+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Colonialismo e imperi",
+        "desc": "Impero britannico, spartizione Africa, India.",
+        "res": [
+          {
+            "t": "British Empire Documentary (EN)",
+            "u": "https://www.youtube.com/results?search_query=british+empire+documentary"
+          },
+          {
+            "t": "Colonialismo Nova Lectio (IT)",
+            "u": "https://www.youtube.com/results?search_query=nova+lectio+colonialismo+italiano"
+          }
+        ]
+      },
+      {
+        "sub": "Prima guerra mondiale",
+        "desc": "Cause, trincee, Verdun, Somme.",
+        "res": [
+          {
+            "t": "WW1 Epic History (EN)",
+            "u": "https://www.youtube.com/results?search_query=world+war+1+epic+history"
+          },
+          {
+            "t": "Grande Guerra Barbero (IT)",
+            "u": "https://www.youtube.com/results?search_query=alessandro+barbero+prima+guerra+mondiale"
+          }
+        ]
+      },
+      {
+        "sub": "Tra le due guerre",
+        "desc": "Crisi '29, fascismi, nazismo, Guerra Spagna.",
+        "res": [
+          {
+            "t": "Great Depression explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=great+depression+explained+1929"
+          },
+          {
+            "t": "Fascismo Nova Lectio (IT)",
+            "u": "https://www.youtube.com/results?search_query=nova+lectio+fascismo+nascita"
+          }
+        ]
+      },
+      {
+        "sub": "Seconda guerra mondiale",
+        "desc": "Fronte orientale, D-Day, Olocausto, Pacifico.",
+        "res": [
+          {
+            "t": "WW2 Epic History (EN)",
+            "u": "https://www.youtube.com/results?search_query=world+war+2+epic+history"
+          },
+          {
+            "t": "WW2 documentario ITA",
+            "u": "https://www.youtube.com/results?search_query=seconda+guerra+mondiale+documentario+italia"
+          }
+        ]
+      },
+      {
+        "sub": "Guerra Fredda",
+        "desc": "NATO, crisi Cuba, muro Berlino, Vietnam.",
+        "res": [
+          {
+            "t": "Cold War Oversimplified (EN)",
+            "u": "https://www.youtube.com/results?search_query=cold+war+oversimplified"
+          },
+          {
+            "t": "Guerra Fredda Nova Lectio (IT)",
+            "u": "https://www.youtube.com/results?search_query=nova+lectio+guerra+fredda"
+          }
+        ]
+      },
+      {
+        "sub": "Decolonizzazione",
+        "desc": "India, Africa, Medio Oriente: fine imperi coloniali.",
+        "res": [
+          {
+            "t": "Decolonization Documentary (EN)",
+            "u": "https://www.youtube.com/results?search_query=decolonization+documentary"
+          },
+          {
+            "t": "Decolonizzazione ITA",
+            "u": "https://www.youtube.com/results?search_query=decolonizzazione+spiegazione+storia"
+          }
+        ]
+      },
+      {
+        "sub": "Anni '60-'70: diritti civili",
+        "desc": "MLK, hippie, femminismo, uomo sulla Luna.",
+        "res": [
+          {
+            "t": "Civil Rights Movement (EN)",
+            "u": "https://www.youtube.com/results?search_query=civil+rights+movement+documentary"
+          },
+          {
+            "t": "Anni 60 Italia doc",
+            "u": "https://www.youtube.com/results?search_query=anni+60+italia+documentario"
+          }
+        ]
+      },
+      {
+        "sub": "Caduta Muro e anni '90",
+        "desc": "1989, riunificazione tedesca, crollo URSS.",
+        "res": [
+          {
+            "t": "Fall of Berlin Wall (EN)",
+            "u": "https://www.youtube.com/results?search_query=fall+of+berlin+wall+documentary+1989"
+          },
+          {
+            "t": "Caduta Muro ITA",
+            "u": "https://www.youtube.com/results?search_query=caduta+muro+berlino+documentario+italiano"
+          }
+        ]
+      },
+      {
+        "sub": "Storia 2000-oggi",
+        "desc": "11/9, crisi 2008, pandemia, guerre recenti.",
+        "res": [
+          {
+            "t": "21st Century History (EN)",
+            "u": "https://www.youtube.com/results?search_query=21st+century+history+documentary"
+          },
+          {
+            "t": "Storia recente Nova Lectio (IT)",
+            "u": "https://www.youtube.com/results?search_query=nova+lectio+storia+recente+2000"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "finance",
+    "icon": "💰",
+    "name": "Finanza Personale & Investimenti",
+    "color": "#43A047",
+    "short": "Finanza",
+    "curriculum": [
+      {
+        "sub": "Budgeting 50/30/20",
+        "desc": "50% necessita, 30% desideri, 20% risparmio.",
+        "res": [
+          {
+            "t": "50/30/20 Rule explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=50+30+20+rule+budgeting"
+          },
+          {
+            "t": "Budgeting Mr.RIP (IT)",
+            "u": "https://www.youtube.com/results?search_query=mr+rip+budgeting+come+risparmiare"
+          }
+        ]
+      },
+      {
+        "sub": "Fondo di emergenza",
+        "desc": "3-6 mesi di spese, dove tenerlo.",
+        "res": [
+          {
+            "t": "Emergency Fund Guide (EN)",
+            "u": "https://www.youtube.com/results?search_query=emergency+fund+explained+how+much"
+          },
+          {
+            "t": "Fondo emergenza Michelangeli (IT)",
+            "u": "https://www.youtube.com/results?search_query=pietro+michelangeli+fondo+emergenza"
+          }
+        ]
+      },
+      {
+        "sub": "Conti deposito e obbligazioni",
+        "desc": "CD, BOT, BTP: rendimento garantito.",
+        "res": [
+          {
+            "t": "Conti deposito migliori (IT)",
+            "u": "https://www.youtube.com/results?search_query=conti+deposito+migliori+2026"
+          },
+          {
+            "t": "BTP obbligazioni spiegate (IT)",
+            "u": "https://www.youtube.com/results?search_query=btp+bot+spiegazione+rendimento"
+          }
+        ]
+      },
+      {
+        "sub": "ETF: cosa sono",
+        "desc": "ETF: diversificazione, TER, replica fisica/sintetica.",
+        "res": [
+          {
+            "t": "ETF Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=etf+explained+for+beginners+2025"
+          },
+          {
+            "t": "ETF Mr.RIP (IT)",
+            "u": "https://www.youtube.com/results?search_query=mr+rip+etf+cosa+sono+come+funzionano"
+          }
+        ]
+      },
+      {
+        "sub": "ETF azionari globali",
+        "desc": "MSCI World, S&P 500, VWCE: differenze.",
+        "res": [
+          {
+            "t": "Best ETFs 2026 (EN)",
+            "u": "https://www.youtube.com/results?search_query=best+etfs+2026+msci+world+vwce"
+          },
+          {
+            "t": "VWCE vs MSCI World (IT)",
+            "u": "https://www.youtube.com/results?search_query=vwce+vs+msci+world+etf+migliore"
+          }
+        ]
+      },
+      {
+        "sub": "PAC e Dollar Cost Averaging",
+        "desc": "Investire ogni mese, interesse composto.",
+        "res": [
+          {
+            "t": "DCA Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=dollar+cost+averaging+explained"
+          },
+          {
+            "t": "PAC ETF guida ITA",
+            "u": "https://www.youtube.com/results?search_query=pac+etf+come+funziona+guida+italiana"
+          }
+        ]
+      },
+      {
+        "sub": "Obbligazioni e bond",
+        "desc": "Governativi vs corporate, rating, duration.",
+        "res": [
+          {
+            "t": "Bonds Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=bonds+investing+explained"
+          },
+          {
+            "t": "Obbligazioni guida (IT)",
+            "u": "https://www.youtube.com/results?search_query=obbligazioni+guida+completa+BTP+BOT"
+          }
+        ]
+      },
+      {
+        "sub": "Portafoglio Lazy (Pigro)",
+        "desc": "2-4 ETF, ribilanciamento annuale, semplicita.",
+        "res": [
+          {
+            "t": "Lazy Portfolio Guide (EN)",
+            "u": "https://www.youtube.com/results?search_query=lazy+portfolio+etf+three+fund"
+          },
+          {
+            "t": "Portafoglio pigro ETF (IT)",
+            "u": "https://www.youtube.com/results?search_query=portafoglio+pigro+etf+italia"
+          }
+        ]
+      },
+      {
+        "sub": "Fondo pensione e previdenza",
+        "desc": "Fondo negoziale, PIP, deduzioni fiscali, TFR.",
+        "res": [
+          {
+            "t": "Fondo pensione spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=fondo+pensione+spiegazione+italia"
+          },
+          {
+            "t": "TFR fondo pensione (IT)",
+            "u": "https://www.youtube.com/results?search_query=tfr+fondo+pensione+conviene+2025"
+          }
+        ]
+      },
+      {
+        "sub": "Tasse e ottimizzazione fiscale",
+        "desc": "Amministrato vs dichiarativo, plusvalenze.",
+        "res": [
+          {
+            "t": "Tasse investimenti Italia (IT)",
+            "u": "https://www.youtube.com/results?search_query=tasse+investimenti+italia+spiegazione+2025"
+          },
+          {
+            "t": "Regime amministrato vs dichiarativo (IT)",
+            "u": "https://www.youtube.com/results?search_query=regime+amministrato+dichiarativo+differenza"
+          }
+        ]
+      },
+      {
+        "sub": "Crypto e Blockchain: basi",
+        "desc": "Bitcoin, Ethereum, wallet, tassazione crypto.",
+        "res": [
+          {
+            "t": "Bitcoin Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=bitcoin+explained+2025"
+          },
+          {
+            "t": "Crypto tasse Italia (IT)",
+            "u": "https://www.youtube.com/results?search_query=criptovalute+tasse+italia+2026"
+          }
+        ]
+      },
+      {
+        "sub": "Gestione del debito",
+        "desc": "Debiti buoni vs cattivi, snowball vs avalanche.",
+        "res": [
+          {
+            "t": "Debt Snowball vs Avalanche (EN)",
+            "u": "https://www.youtube.com/results?search_query=debt+snowball+vs+avalanche+method"
+          },
+          {
+            "t": "Gestione debiti guida (IT)",
+            "u": "https://www.youtube.com/results?search_query=come+gestire+debiti+strategia"
+          }
+        ]
+      },
+      {
+        "sub": "Assicurazioni e protezione",
+        "desc": "RC auto, casa, vita, salute: quali servono.",
+        "res": [
+          {
+            "t": "Insurance Guide (EN)",
+            "u": "https://www.youtube.com/results?search_query=insurance+guide+what+you+need"
+          },
+          {
+            "t": "Assicurazioni spiegate (IT)",
+            "u": "https://www.youtube.com/results?search_query=assicurazioni+spiegazione+quali+servono"
+          }
+        ]
+      },
+      {
+        "sub": "Real Estate e REITs",
+        "desc": "REIT, crowdfunding immobiliare.",
+        "res": [
+          {
+            "t": "REITs Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=reits+explained+investing"
+          },
+          {
+            "t": "Crowdfunding immobiliare (IT)",
+            "u": "https://www.youtube.com/results?search_query=crowdfunding+immobiliare+italia+conviene"
+          }
+        ]
+      },
+      {
+        "sub": "Oro e materie prime",
+        "desc": "Oro bene rifugio, ETF oro, inflazione.",
+        "res": [
+          {
+            "t": "Gold Investing 2026 (EN)",
+            "u": "https://www.youtube.com/results?search_query=gold+investing+explained+2025"
+          },
+          {
+            "t": "Investire in oro ETF (IT)",
+            "u": "https://www.youtube.com/results?search_query=investire+in+oro+etf+come+funziona"
+          }
+        ]
+      },
+      {
+        "sub": "Interesse composto",
+        "desc": "Regola del 72, simulazioni a 10/20/30 anni.",
+        "res": [
+          {
+            "t": "Compound Interest Visualized (EN)",
+            "u": "https://www.youtube.com/results?search_query=compound+interest+explained+visually"
+          },
+          {
+            "t": "Regola del 72 spiegata (IT)",
+            "u": "https://www.youtube.com/results?search_query=regola+del+72+interesse+composto"
+          }
+        ]
+      },
+      {
+        "sub": "Movimento FIRE",
+        "desc": "Financial Independence Retire Early, 4% rule.",
+        "res": [
+          {
+            "t": "FIRE Movement Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=fire+movement+explained"
+          },
+          {
+            "t": "FIRE Italia Mr.RIP (IT)",
+            "u": "https://www.youtube.com/results?search_query=mr+rip+fire+movimento+italia"
+          }
+        ]
+      },
+      {
+        "sub": "Psicologia del denaro",
+        "desc": "Morgan Housel: bias, rapporto emotivo coi soldi.",
+        "res": [
+          {
+            "t": "Psychology of Money Summary (EN)",
+            "u": "https://www.youtube.com/results?search_query=psychology+of+money+morgan+housel+summary"
+          },
+          {
+            "t": "Psicologia del denaro ITA",
+            "u": "https://www.youtube.com/results?search_query=psicologia+del+denaro+morgan+housel"
+          }
+        ]
+      },
+      {
+        "sub": "Inflazione e protezione",
+        "desc": "CPI, come proteggere il potere d'acquisto.",
+        "res": [
+          {
+            "t": "Inflation Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=inflation+explained+2025"
+          },
+          {
+            "t": "Proteggersi dall'inflazione (IT)",
+            "u": "https://www.youtube.com/results?search_query=come+proteggersi+dall+inflazione"
+          }
+        ]
+      },
+      {
+        "sub": "Diversificazione portafoglio",
+        "desc": "Asset allocation, correlazione, frontiera efficiente.",
+        "res": [
+          {
+            "t": "Portfolio Diversification (EN)",
+            "u": "https://www.youtube.com/results?search_query=portfolio+diversification+explained"
+          },
+          {
+            "t": "Diversificare portafoglio (IT)",
+            "u": "https://www.youtube.com/results?search_query=diversificare+portafoglio+investimenti+guida"
+          }
+        ]
+      },
+      {
+        "sub": "Robo-advisor e consulenza",
+        "desc": "Moneyfarm, Scalable, Trade Republic.",
+        "res": [
+          {
+            "t": "Robo Advisor Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=robo+advisor+explained+2025"
+          },
+          {
+            "t": "Moneyfarm recensione (IT)",
+            "u": "https://www.youtube.com/results?search_query=moneyfarm+recensione+2025+conviene"
+          }
+        ]
+      },
+      {
+        "sub": "Analisi fondamentale base",
+        "desc": "P/E, EPS, dividend yield: valutare azienda.",
+        "res": [
+          {
+            "t": "Fundamental Analysis (EN)",
+            "u": "https://www.youtube.com/results?search_query=fundamental+analysis+stocks+basics"
+          },
+          {
+            "t": "Analisi fondamentale ITA",
+            "u": "https://www.youtube.com/results?search_query=analisi+fondamentale+azioni+guida+italiano"
+          }
+        ]
+      },
+      {
+        "sub": "Finanza comportamentale",
+        "desc": "Bias conferma, loss aversion, herd behavior.",
+        "res": [
+          {
+            "t": "Behavioral Finance (EN)",
+            "u": "https://www.youtube.com/results?search_query=behavioral+finance+biases+explained"
+          },
+          {
+            "t": "Psicologia investimenti (IT)",
+            "u": "https://www.youtube.com/results?search_query=psicologia+investimenti+bias+cognitivi"
+          }
+        ]
+      },
+      {
+        "sub": "Pianificazione finanziaria",
+        "desc": "Budget, emergenza, investimenti, pensione, obiettivi.",
+        "res": [
+          {
+            "t": "Financial Plan Step by Step (EN)",
+            "u": "https://www.youtube.com/results?search_query=financial+planning+step+by+step"
+          },
+          {
+            "t": "Pianificazione finanziaria ITA",
+            "u": "https://www.youtube.com/results?search_query=pianificazione+finanziaria+personale+guida"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "engines",
+    "icon": "🏎️",
+    "name": "Motori & Meccanica",
+    "color": "#E53935",
+    "short": "Motori",
+    "curriculum": [
+      {
+        "sub": "Motore a combustione: principi",
+        "desc": "Ciclo 4 tempi, componenti, benzina/diesel.",
+        "res": [
+          {
+            "t": "How Car Engine Works (EN)",
+            "u": "https://www.youtube.com/results?search_query=how+car+engine+works+animation"
+          },
+          {
+            "t": "Motore 4 tempi Naska (IT)",
+            "u": "https://www.youtube.com/results?search_query=alberto+naska+motore+4+tempi"
+          }
+        ]
+      },
+      {
+        "sub": "Ciclo Otto vs Diesel",
+        "desc": "Differenze termodinamiche, accensione.",
+        "res": [
+          {
+            "t": "Otto vs Diesel (EN)",
+            "u": "https://www.youtube.com/results?search_query=otto+vs+diesel+cycle+explained"
+          },
+          {
+            "t": "Benzina vs Diesel Naska (IT)",
+            "u": "https://www.youtube.com/results?search_query=alberto+naska+benzina+vs+diesel"
+          }
+        ]
+      },
+      {
+        "sub": "Sovralimentazione: turbo",
+        "desc": "Turbo vs supercharger, lag, twin-scroll.",
+        "res": [
+          {
+            "t": "Turbos Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=turbocharger+explained+engineering"
+          },
+          {
+            "t": "Turbo spiegato Naska (IT)",
+            "u": "https://www.youtube.com/results?search_query=alberto+naska+turbo+motore"
+          }
+        ]
+      },
+      {
+        "sub": "Sistemi di iniezione",
+        "desc": "Carburatore vs iniezione meccanica vs elettronica.",
+        "res": [
+          {
+            "t": "Fuel Injection (EN)",
+            "u": "https://www.youtube.com/results?search_query=fuel+injection+system+explained"
+          },
+          {
+            "t": "Iniezione elettronica (IT)",
+            "u": "https://www.youtube.com/results?search_query=iniezione+elettronica+motore+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Cambio manuale",
+        "desc": "Ingranaggi, sincronizzatori, frizione, doppietta.",
+        "res": [
+          {
+            "t": "Manual Transmission (EN)",
+            "u": "https://www.youtube.com/results?search_query=manual+transmission+how+it+works"
+          },
+          {
+            "t": "Cambio manuale spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=cambio+manuale+spiegazione+auto"
+          }
+        ]
+      },
+      {
+        "sub": "Cambio automatico e DCT",
+        "desc": "Convertitore di coppia, CVT, doppia frizione.",
+        "res": [
+          {
+            "t": "DCT Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=dual+clutch+transmission+explained"
+          },
+          {
+            "t": "Cambio automatico tipi (IT)",
+            "u": "https://www.youtube.com/results?search_query=cambio+automatico+tipi+dsg+cvt"
+          }
+        ]
+      },
+      {
+        "sub": "Differenziali e trazione",
+        "desc": "Aperto, LSD, Torsen, 4WD vs AWD.",
+        "res": [
+          {
+            "t": "Differential Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=differential+how+it+works+animation"
+          },
+          {
+            "t": "Differenziale auto (IT)",
+            "u": "https://www.youtube.com/results?search_query=differenziale+auto+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Sospensioni",
+        "desc": "MacPherson, multilink, ammortizzatori, molle.",
+        "res": [
+          {
+            "t": "Car Suspension (EN)",
+            "u": "https://www.youtube.com/results?search_query=car+suspension+explained+engineering"
+          },
+          {
+            "t": "Sospensioni Naska (IT)",
+            "u": "https://www.youtube.com/results?search_query=alberto+naska+sospensioni+auto"
+          }
+        ]
+      },
+      {
+        "sub": "Freni e ABS",
+        "desc": "Dischi, tamburi, ABS, EBD, frenata rigenerativa.",
+        "res": [
+          {
+            "t": "ABS Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=abs+brakes+explained+how+works"
+          },
+          {
+            "t": "Freni auto spiegati (IT)",
+            "u": "https://www.youtube.com/results?search_query=freni+auto+dischi+tamburi"
+          }
+        ]
+      },
+      {
+        "sub": "Aerodinamica auto",
+        "desc": "Cx, deportanza, diffusori, ali, effetto suolo.",
+        "res": [
+          {
+            "t": "Car Aerodynamics (EN)",
+            "u": "https://www.youtube.com/results?search_query=car+aerodynamics+explained"
+          },
+          {
+            "t": "Aerodinamica F1 (IT)",
+            "u": "https://www.youtube.com/results?search_query=aerodinamica+formula+1+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Auto elettriche: batterie",
+        "desc": "Li-ion, LFP, stato solido, degrado.",
+        "res": [
+          {
+            "t": "EV Batteries (EN)",
+            "u": "https://www.youtube.com/results?search_query=electric+car+battery+technology+explained"
+          },
+          {
+            "t": "Batterie auto elettriche (IT)",
+            "u": "https://www.youtube.com/results?search_query=batterie+auto+elettriche+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Auto elettriche: motori",
+        "desc": "Motore sincrono, induzione, inverter.",
+        "res": [
+          {
+            "t": "Electric Motor (EN)",
+            "u": "https://www.youtube.com/results?search_query=electric+car+motor+how+it+works"
+          },
+          {
+            "t": "Motori elettrici auto (IT)",
+            "u": "https://www.youtube.com/results?search_query=motori+elettrici+auto+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Auto ibride: mild, full, plugin",
+        "desc": "Differenze e quando conviene ciascuna.",
+        "res": [
+          {
+            "t": "Hybrid vs Plug-in (EN)",
+            "u": "https://www.youtube.com/results?search_query=hybrid+vs+plug+in+hybrid+explained"
+          },
+          {
+            "t": "Ibrido mild full plugin (IT)",
+            "u": "https://www.youtube.com/results?search_query=ibrido+mild+full+plugin+differenze"
+          }
+        ]
+      },
+      {
+        "sub": "Materiali e telaio",
+        "desc": "Acciaio, alluminio, carbonio: monoscocca.",
+        "res": [
+          {
+            "t": "Car Chassis Types (EN)",
+            "u": "https://www.youtube.com/results?search_query=car+chassis+types+monocoque"
+          },
+          {
+            "t": "Telaio auto materiali (IT)",
+            "u": "https://www.youtube.com/results?search_query=telaio+auto+materiali+acciaio+carbonio"
+          }
+        ]
+      },
+      {
+        "sub": "Centraline e ECU tuning",
+        "desc": "Mappatura, rimappatura, sensori.",
+        "res": [
+          {
+            "t": "ECU Tuning (EN)",
+            "u": "https://www.youtube.com/results?search_query=ecu+tuning+explained+remap"
+          },
+          {
+            "t": "Rimappatura centralina (IT)",
+            "u": "https://www.youtube.com/results?search_query=rimappatura+centralina+conviene"
+          }
+        ]
+      },
+      {
+        "sub": "Scarico ed emissioni",
+        "desc": "Catalizzatore, FAP, AdBlue, EGR, Euro.",
+        "res": [
+          {
+            "t": "DPF and EGR (EN)",
+            "u": "https://www.youtube.com/results?search_query=dpf+egr+explained"
+          },
+          {
+            "t": "FAP AdBlue spiegati (IT)",
+            "u": "https://www.youtube.com/results?search_query=fap+adblue+spiegazione+auto"
+          }
+        ]
+      },
+      {
+        "sub": "Formula 1: tecnica",
+        "desc": "Power unit, ERS, DRS, effetto suolo.",
+        "res": [
+          {
+            "t": "F1 Tech Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=f1+car+technology+explained+2025"
+          },
+          {
+            "t": "F1 tecnica Naska (IT)",
+            "u": "https://www.youtube.com/results?search_query=alberto+naska+formula+1+tecnica"
+          }
+        ]
+      },
+      {
+        "sub": "Rally: tecnica",
+        "desc": "WRC, differenziali, pacenotes.",
+        "res": [
+          {
+            "t": "Rally Car Technology (EN)",
+            "u": "https://www.youtube.com/results?search_query=rally+car+technology+explained"
+          },
+          {
+            "t": "Rally Naska (IT)",
+            "u": "https://www.youtube.com/results?search_query=alberto+naska+rally+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Moto: tecnica base",
+        "desc": "2T vs 4T, telaio, forcelle, manutenzione.",
+        "res": [
+          {
+            "t": "Motorcycle Engine (EN)",
+            "u": "https://www.youtube.com/results?search_query=motorcycle+engine+how+it+works"
+          },
+          {
+            "t": "2T vs 4T moto (IT)",
+            "u": "https://www.youtube.com/results?search_query=2+tempi+vs+4+tempi+moto"
+          }
+        ]
+      },
+      {
+        "sub": "Manutenzione auto base",
+        "desc": "Olio, filtri, candele, batteria, gomme.",
+        "res": [
+          {
+            "t": "Basic Car Maintenance (EN)",
+            "u": "https://www.youtube.com/results?search_query=basic+car+maintenance+diy"
+          },
+          {
+            "t": "Manutenzione auto fai da te (IT)",
+            "u": "https://www.youtube.com/results?search_query=manutenzione+auto+fai+da+te+guida"
+          }
+        ]
+      },
+      {
+        "sub": "Diagnostica OBD",
+        "desc": "Codici errore, OBD2 scanner, app diagnostica.",
+        "res": [
+          {
+            "t": "OBD2 Scanner Guide (EN)",
+            "u": "https://www.youtube.com/results?search_query=obd2+scanner+guide+how+to+use"
+          },
+          {
+            "t": "Diagnostica auto OBD (IT)",
+            "u": "https://www.youtube.com/results?search_query=diagnostica+auto+obd+tutorial"
+          }
+        ]
+      },
+      {
+        "sub": "Restauro auto storiche",
+        "desc": "Ruggine, motore, interni, verniciatura.",
+        "res": [
+          {
+            "t": "Classic Car Restoration (EN)",
+            "u": "https://www.youtube.com/results?search_query=classic+car+restoration+guide"
+          },
+          {
+            "t": "Restauro auto d'epoca (IT)",
+            "u": "https://www.youtube.com/results?search_query=restauro+auto+epoca+tutorial"
+          }
+        ]
+      },
+      {
+        "sub": "Guida sportiva",
+        "desc": "Traiettorie, trail braking, trasferimento carico.",
+        "res": [
+          {
+            "t": "Trail Braking (EN)",
+            "u": "https://www.youtube.com/results?search_query=trail+braking+explained+racing"
+          },
+          {
+            "t": "Guida sportiva tecnica (IT)",
+            "u": "https://www.youtube.com/results?search_query=guida+sportiva+tecnica+traiettorie"
+          }
+        ]
+      },
+      {
+        "sub": "Futuro mobilita",
+        "desc": "Guida autonoma, idrogeno, e-fuel, V2X.",
+        "res": [
+          {
+            "t": "Future of Cars 2030 (EN)",
+            "u": "https://www.youtube.com/results?search_query=future+of+cars+2030+autonomous"
+          },
+          {
+            "t": "Idrogeno vs elettrico (IT)",
+            "u": "https://www.youtube.com/results?search_query=idrogeno+vs+elettrico+auto+futuro"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "travel",
+    "icon": "✈️",
+    "name": "Viaggi & Geografia",
+    "color": "#FB8C00",
+    "short": "Viaggi",
+    "curriculum": [
+      {
+        "sub": "Geografia fisica",
+        "desc": "Placche tettoniche, oceani, montagne, deserti.",
+        "res": [
+          {
+            "t": "Geography Now (EN)",
+            "u": "https://www.youtube.com/results?search_query=geography+now+continents"
+          },
+          {
+            "t": "Placche tettoniche (IT)",
+            "u": "https://www.youtube.com/results?search_query=placche+tettoniche+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Climi e biomi",
+        "desc": "Zone climatiche, tundra, taiga, savana.",
+        "res": [
+          {
+            "t": "Climate Zones (EN)",
+            "u": "https://www.youtube.com/results?search_query=climate+zones+of+the+world+explained"
+          },
+          {
+            "t": "Biomi del mondo (IT)",
+            "u": "https://www.youtube.com/results?search_query=biomi+del+mondo+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Capitali e bandiere",
+        "desc": "Trucchi mnemonici capitali e bandiere.",
+        "res": [
+          {
+            "t": "World Capitals Quiz (EN)",
+            "u": "https://www.youtube.com/results?search_query=world+capitals+memory+tricks"
+          },
+          {
+            "t": "Capitali del mondo (IT)",
+            "u": "https://www.youtube.com/results?search_query=capitali+del+mondo+trucchi"
+          }
+        ]
+      },
+      {
+        "sub": "Viaggi low cost",
+        "desc": "Voli, Skyscanner, error fare, scali.",
+        "res": [
+          {
+            "t": "Travel Hacking 2026 (EN)",
+            "u": "https://www.youtube.com/results?search_query=travel+hacking+cheap+flights+2025"
+          },
+          {
+            "t": "Voli economici Italia (IT)",
+            "u": "https://www.youtube.com/results?search_query=come+trovare+voli+economici+skyscanner"
+          }
+        ]
+      },
+      {
+        "sub": "Assicurazioni viaggio",
+        "desc": "Coperture, Heymondo vs AXA.",
+        "res": [
+          {
+            "t": "Travel Insurance Guide (EN)",
+            "u": "https://www.youtube.com/results?search_query=travel+insurance+guide+2025"
+          },
+          {
+            "t": "Assicurazione viaggio (IT)",
+            "u": "https://www.youtube.com/results?search_query=assicurazione+viaggio+quale+scegliere"
+          }
+        ]
+      },
+      {
+        "sub": "Documenti e visti",
+        "desc": "Passaporto, ESTA, ETIAS, visti.",
+        "res": [
+          {
+            "t": "ETIAS Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=etias+explained+2025"
+          },
+          {
+            "t": "Visti e documenti (IT)",
+            "u": "https://www.youtube.com/results?search_query=visti+passaporto+documenti+viaggio"
+          }
+        ]
+      },
+      {
+        "sub": "Viaggi in solitaria",
+        "desc": "Sicurezza, ostelli, nomadismo digitale.",
+        "res": [
+          {
+            "t": "Solo Travel Guide (EN)",
+            "u": "https://www.youtube.com/results?search_query=solo+travel+guide+tips+safety"
+          },
+          {
+            "t": "Viaggiare da soli (IT)",
+            "u": "https://www.youtube.com/results?search_query=viaggiare+da+soli+consigli+sicurezza"
+          }
+        ]
+      },
+      {
+        "sub": "Fotografia di viaggio",
+        "desc": "Smartphone vs mirrorless, composizione.",
+        "res": [
+          {
+            "t": "Travel Photography (EN)",
+            "u": "https://www.youtube.com/results?search_query=travel+photography+tips+smartphone"
+          },
+          {
+            "t": "Fotografia viaggio (IT)",
+            "u": "https://www.youtube.com/results?search_query=fotografia+viaggio+consigli"
+          }
+        ]
+      },
+      {
+        "sub": "Asia: mete",
+        "desc": "Giappone, Thailandia, Vietnam, India.",
+        "res": [
+          {
+            "t": "Japan Travel 2026 (EN)",
+            "u": "https://www.youtube.com/results?search_query=japan+travel+guide+2025"
+          },
+          {
+            "t": "Sud-est asiatico (IT)",
+            "u": "https://www.youtube.com/results?search_query=viaggio+sud+est+asiatico+consigli"
+          }
+        ]
+      },
+      {
+        "sub": "Europa: itinerari",
+        "desc": "Interrail, capitali, borghi italiani.",
+        "res": [
+          {
+            "t": "Interrail Guide 2026 (EN)",
+            "u": "https://www.youtube.com/results?search_query=interrail+guide+2025+europe"
+          },
+          {
+            "t": "Europa on the road (IT)",
+            "u": "https://www.youtube.com/results?search_query=europa+on+the+road+itinerario"
+          }
+        ]
+      },
+      {
+        "sub": "Americhe: road trip",
+        "desc": "Route 66, Patagonia, Peru, Messico.",
+        "res": [
+          {
+            "t": "Route 66 Road Trip (EN)",
+            "u": "https://www.youtube.com/results?search_query=route+66+road+trip+guide"
+          },
+          {
+            "t": "USA on the road (IT)",
+            "u": "https://www.youtube.com/results?search_query=stati+uniti+on+the+road+itinerario"
+          }
+        ]
+      },
+      {
+        "sub": "Africa: safari",
+        "desc": "Tanzania, Kenya, Sudafrica, Namibia.",
+        "res": [
+          {
+            "t": "African Safari Guide (EN)",
+            "u": "https://www.youtube.com/results?search_query=african+safari+guide+first+time"
+          },
+          {
+            "t": "Safari in Africa (IT)",
+            "u": "https://www.youtube.com/results?search_query=safari+africa+consigli+quando+andare"
+          }
+        ]
+      },
+      {
+        "sub": "Oceania",
+        "desc": "Australia east coast, Nuova Zelanda, Fiji.",
+        "res": [
+          {
+            "t": "Australia Travel (EN)",
+            "u": "https://www.youtube.com/results?search_query=australia+travel+guide+2025"
+          },
+          {
+            "t": "Nuova Zelanda road trip (EN)",
+            "u": "https://www.youtube.com/results?search_query=new+zealand+road+trip+guide"
+          }
+        ]
+      },
+      {
+        "sub": "Medio Oriente",
+        "desc": "Istanbul, Cappadocia, Giordania, Oman.",
+        "res": [
+          {
+            "t": "Turkey Travel Guide (EN)",
+            "u": "https://www.youtube.com/results?search_query=turkey+travel+guide+istanbul"
+          },
+          {
+            "t": "Viaggio Giordania (IT)",
+            "u": "https://www.youtube.com/results?search_query=viaggio+giordania+consigli+petra"
+          }
+        ]
+      },
+      {
+        "sub": "Viaggi sostenibili",
+        "desc": "Slow travel, treno vs aereo, ecoturismo.",
+        "res": [
+          {
+            "t": "Sustainable Travel (EN)",
+            "u": "https://www.youtube.com/results?search_query=sustainable+travel+tips+eco"
+          },
+          {
+            "t": "Turismo sostenibile (IT)",
+            "u": "https://www.youtube.com/results?search_query=turismo+sostenibile+consigli"
+          }
+        ]
+      },
+      {
+        "sub": "Cucine del mondo",
+        "desc": "Street food Bangkok, tapas, ramen, tacos.",
+        "res": [
+          {
+            "t": "Best Street Food (EN)",
+            "u": "https://www.youtube.com/results?search_query=best+street+food+around+the+world"
+          },
+          {
+            "t": "Cucine dal mondo (IT)",
+            "u": "https://www.youtube.com/results?search_query=cucine+dal+mondo+piatti+tipici"
+          }
+        ]
+      },
+      {
+        "sub": "Lingue e dialetti",
+        "desc": "Famiglie linguistiche, dialetti italiani.",
+        "res": [
+          {
+            "t": "Language Families (EN)",
+            "u": "https://www.youtube.com/results?search_query=language+families+of+the+world"
+          },
+          {
+            "t": "Dialetti italiani (IT)",
+            "u": "https://www.youtube.com/results?search_query=dialetti+italiani+documentario"
+          }
+        ]
+      },
+      {
+        "sub": "Trasporti nel mondo",
+        "desc": "Transiberiana, shinkansen, tuk-tuk.",
+        "res": [
+          {
+            "t": "Trans-Siberian Railway (EN)",
+            "u": "https://www.youtube.com/results?search_query=trans+siberian+railway+journey"
+          },
+          {
+            "t": "Trasporti curiosi (IT)",
+            "u": "https://www.youtube.com/results?search_query=trasporti+strani+nel+mondo"
+          }
+        ]
+      },
+      {
+        "sub": "Viaggi estremi",
+        "desc": "Everest base camp, Sahara, Antartide.",
+        "res": [
+          {
+            "t": "Everest Base Camp (EN)",
+            "u": "https://www.youtube.com/results?search_query=everest+base+camp+trek+guide"
+          },
+          {
+            "t": "Viaggi estremi (IT)",
+            "u": "https://www.youtube.com/results?search_query=viaggi+estremi+avventura+consigli"
+          }
+        ]
+      },
+      {
+        "sub": "Patrimoni UNESCO",
+        "desc": "Siti italiani UNESCO, selezione.",
+        "res": [
+          {
+            "t": "UNESCO World Heritage (EN)",
+            "u": "https://www.youtube.com/results?search_query=unesco+world+heritage+sites+top"
+          },
+          {
+            "t": "UNESCO Italia (IT)",
+            "u": "https://www.youtube.com/results?search_query=unesco+italia+siti+documentario"
+          }
+        ]
+      },
+      {
+        "sub": "Backpacking",
+        "desc": "Zaino, ostelli, sicurezza, budget.",
+        "res": [
+          {
+            "t": "Backpacking Guide (EN)",
+            "u": "https://www.youtube.com/results?search_query=backpacking+guide+for+beginners"
+          },
+          {
+            "t": "Backpacking Balini (IT)",
+            "u": "https://www.youtube.com/results?search_query=nicolo+balini+backpacking+consigli"
+          }
+        ]
+      },
+      {
+        "sub": "Viaggi lusso accessibili",
+        "desc": "Miglia aeree, upgrade, lounge.",
+        "res": [
+          {
+            "t": "Travel Hacking Luxury (EN)",
+            "u": "https://www.youtube.com/results?search_query=travel+hacking+luxury+for+cheap"
+          },
+          {
+            "t": "Miglia aeree guida (IT)",
+            "u": "https://www.youtube.com/results?search_query=miglia+aeree+come+accumularle"
+          }
+        ]
+      },
+      {
+        "sub": "GIS e mappe digitali",
+        "desc": "Google Earth, OpenStreetMap.",
+        "res": [
+          {
+            "t": "GIS Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=gis+explained+geographic+information"
+          },
+          {
+            "t": "GIS mappe digitali (IT)",
+            "u": "https://www.youtube.com/results?search_query=gis+sistemi+informativi+geografici"
+          }
+        ]
+      },
+      {
+        "sub": "Pianificazione viaggio",
+        "desc": "Itinerario, budget, documenti, checklist.",
+        "res": [
+          {
+            "t": "Trip Planning Masterclass (EN)",
+            "u": "https://www.youtube.com/results?search_query=trip+planning+guide+step+by+step"
+          },
+          {
+            "t": "Pianificare viaggio (IT)",
+            "u": "https://www.youtube.com/results?search_query=come+pianificare+un+viaggio+checklist"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "english",
+    "icon": "🇬🇧",
+    "name": "Inglese Avanzato",
+    "color": "#8E24AA",
+    "short": "Inglese",
+    "curriculum": [
+      {
+        "sub": "Phrasal Verbs essenziali",
+        "desc": "50 phrasal verb piu usati nel business.",
+        "res": [
+          {
+            "t": "Business Phrasal Verbs (EN)",
+            "u": "https://www.youtube.com/results?search_query=business+phrasal+verbs+english"
+          },
+          {
+            "t": "Phrasal Verbs Bringlese (IT)",
+            "u": "https://www.youtube.com/results?search_query=bringlese+phrasal+verbs+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Idioms per il lavoro",
+        "desc": "Think outside the box, hit the ground running.",
+        "res": [
+          {
+            "t": "Business Idioms (EN)",
+            "u": "https://www.youtube.com/results?search_query=business+english+idioms+explained"
+          },
+          {
+            "t": "Idioms inglesi spiegati (IT)",
+            "u": "https://www.youtube.com/results?search_query=idioms+inglesi+spiegazione+lavoro"
+          }
+        ]
+      },
+      {
+        "sub": "Email formali",
+        "desc": "Struttura, oggetto, apertura/chiusura formale.",
+        "res": [
+          {
+            "t": "Professional Emails (EN)",
+            "u": "https://www.youtube.com/results?search_query=how+to+write+professional+emails+english"
+          },
+          {
+            "t": "Email formali inglese (IT)",
+            "u": "https://www.youtube.com/results?search_query=email+formali+in+inglese+guida"
+          }
+        ]
+      },
+      {
+        "sub": "Presentazioni in inglese",
+        "desc": "Struttura, storytelling, Q&A.",
+        "res": [
+          {
+            "t": "English Presentation Skills (EN)",
+            "u": "https://www.youtube.com/results?search_query=english+presentation+skills+tips"
+          },
+          {
+            "t": "Presentazioni inglese (IT)",
+            "u": "https://www.youtube.com/results?search_query=presentazioni+in+inglese+consigli"
+          }
+        ]
+      },
+      {
+        "sub": "Tech English: coding",
+        "desc": "Refactor, deploy, PR, endpoint, boilerplate.",
+        "res": [
+          {
+            "t": "English for Programmers (EN)",
+            "u": "https://www.youtube.com/results?search_query=english+for+programmers+technical+terms"
+          },
+          {
+            "t": "Inglese per programmatori (IT)",
+            "u": "https://www.youtube.com/results?search_query=inglese+per+programmatori+vocaboli"
+          }
+        ]
+      },
+      {
+        "sub": "Tech English: system design",
+        "desc": "Scalability, load balancer, caching, sharding.",
+        "res": [
+          {
+            "t": "System Design English (EN)",
+            "u": "https://www.youtube.com/results?search_query=system+design+interview+english"
+          },
+          {
+            "t": "Architettura in inglese (IT)",
+            "u": "https://www.youtube.com/results?search_query=spiegare+architettura+software+in+inglese"
+          }
+        ]
+      },
+      {
+        "sub": "Small talk professionale",
+        "desc": "Networking event, conference call.",
+        "res": [
+          {
+            "t": "Business Small Talk (EN)",
+            "u": "https://www.youtube.com/results?search_query=business+small+talk+english"
+          },
+          {
+            "t": "Networking in inglese (IT)",
+            "u": "https://www.youtube.com/results?search_query=networking+in+inglese+consigli"
+          }
+        ]
+      },
+      {
+        "sub": "Job interview in inglese",
+        "desc": "STAR method, domande tech, punti forza.",
+        "res": [
+          {
+            "t": "English Job Interview (EN)",
+            "u": "https://www.youtube.com/results?search_query=english+job+interview+tips+developer"
+          },
+          {
+            "t": "Colloquio inglese tech (IT)",
+            "u": "https://www.youtube.com/results?search_query=colloquio+inglese+sviluppatore+consigli"
+          }
+        ]
+      },
+      {
+        "sub": "Listening: podcast tech",
+        "desc": "Syntax.fm, Changelog: migliorare ascolto.",
+        "res": [
+          {
+            "t": "Best Tech Podcasts (EN)",
+            "u": "https://www.youtube.com/results?search_query=best+tech+podcasts+2025+developers"
+          },
+          {
+            "t": "Imparare inglese podcast (IT)",
+            "u": "https://www.youtube.com/results?search_query=imparare+inglese+con+podcast+metodo"
+          }
+        ]
+      },
+      {
+        "sub": "Reading: tech docs",
+        "desc": "Leggere documentazione, RFC, blog post.",
+        "res": [
+          {
+            "t": "Read Technical Docs (EN)",
+            "u": "https://www.youtube.com/results?search_query=how+to+read+technical+documentation"
+          },
+          {
+            "t": "Leggere docs inglese (IT)",
+            "u": "https://www.youtube.com/results?search_query=leggere+documentazione+tecnica+in+inglese"
+          }
+        ]
+      },
+      {
+        "sub": "Writing: documentazione",
+        "desc": "Scrivere README, API docs in inglese.",
+        "res": [
+          {
+            "t": "Technical Writing (EN)",
+            "u": "https://www.youtube.com/results?search_query=technical+writing+basics+documentation"
+          },
+          {
+            "t": "Scrivere docs inglese (IT)",
+            "u": "https://www.youtube.com/results?search_query=scrivere+documentazione+tecnica+in+inglese"
+          }
+        ]
+      },
+      {
+        "sub": "Pronunciation",
+        "desc": "Th, R vs L, ship vs sheep, word stress.",
+        "res": [
+          {
+            "t": "Pronunciation Practice (EN)",
+            "u": "https://www.youtube.com/results?search_query=english+pronunciation+practice+th+sound"
+          },
+          {
+            "t": "Pronuncia inglese (IT)",
+            "u": "https://www.youtube.com/results?search_query=pronuncia+inglese+suoni+difficili"
+          }
+        ]
+      },
+      {
+        "sub": "Grammar: conditionals",
+        "desc": "Zero, first, second, third conditional.",
+        "res": [
+          {
+            "t": "Conditionals Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=english+conditionals+explained+examples"
+          },
+          {
+            "t": "Conditional inglese (IT)",
+            "u": "https://www.youtube.com/results?search_query=periodo+ipotetico+inglese+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Grammar: reported speech",
+        "desc": "Discorso indiretto in contesto professionale.",
+        "res": [
+          {
+            "t": "Reported Speech (EN)",
+            "u": "https://www.youtube.com/results?search_query=reported+speech+english+grammar"
+          },
+          {
+            "t": "Discorso indiretto inglese (IT)",
+            "u": "https://www.youtube.com/results?search_query=discorso+indiretto+inglese+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Slang moderno",
+        "desc": "Wanna, gonna, kinda, lit, rizz, cap/no cap.",
+        "res": [
+          {
+            "t": "Modern English Slang (EN)",
+            "u": "https://www.youtube.com/results?search_query=modern+english+slang+2025"
+          },
+          {
+            "t": "Slang inglese moderno (IT)",
+            "u": "https://www.youtube.com/results?search_query=slang+inglese+moderno+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "British vs American",
+        "desc": "Vocabolario, spelling, pronuncia.",
+        "res": [
+          {
+            "t": "British vs American (EN)",
+            "u": "https://www.youtube.com/results?search_query=british+vs+american+english+differences"
+          },
+          {
+            "t": "UK vs US English (IT)",
+            "u": "https://www.youtube.com/results?search_query=differenze+inglese+britannico+americano"
+          }
+        ]
+      },
+      {
+        "sub": "Certificazioni IELTS/TOEFL",
+        "desc": "Quale serve, struttura, punteggi.",
+        "res": [
+          {
+            "t": "IELTS vs TOEFL (EN)",
+            "u": "https://www.youtube.com/results?search_query=ielts+vs+toefl+which+is+easier"
+          },
+          {
+            "t": "Certificazioni inglese (IT)",
+            "u": "https://www.youtube.com/results?search_query=certificazioni+inglese+quale+scegliere"
+          }
+        ]
+      },
+      {
+        "sub": "Film e serie per imparare",
+        "desc": "Cosa guardare, sottotitoli, shadowing.",
+        "res": [
+          {
+            "t": "TV Shows Learn English (EN)",
+            "u": "https://www.youtube.com/results?search_query=best+tv+shows+to+learn+english"
+          },
+          {
+            "t": "Imparare inglese film (IT)",
+            "u": "https://www.youtube.com/results?search_query=film+serie+per+imparare+inglese"
+          }
+        ]
+      },
+      {
+        "sub": "News comprehension",
+        "desc": "BBC, CNN, The Economist: capire le notizie.",
+        "res": [
+          {
+            "t": "BBC Learning English News (EN)",
+            "u": "https://www.youtube.com/results?search_query=bbc+learning+english+news+review"
+          },
+          {
+            "t": "Capire notizie inglese (IT)",
+            "u": "https://www.youtube.com/results?search_query=capire+notizie+in+inglese+consigli"
+          }
+        ]
+      },
+      {
+        "sub": "Debate e argomentazione",
+        "desc": "I'd argue that, the point is, on the other hand.",
+        "res": [
+          {
+            "t": "English Debate Phrases (EN)",
+            "u": "https://www.youtube.com/results?search_query=english+debate+phrases+argument"
+          },
+          {
+            "t": "Argomentare in inglese (IT)",
+            "u": "https://www.youtube.com/results?search_query=argomentare+in+inglese+frasi+utili"
+          }
+        ]
+      },
+      {
+        "sub": "Humor e sarcasmo",
+        "desc": "Umorismo britannico, understatement.",
+        "res": [
+          {
+            "t": "British Humour (EN)",
+            "u": "https://www.youtube.com/results?search_query=british+humour+explained+foreigners"
+          },
+          {
+            "t": "Sarcasmo in inglese (IT)",
+            "u": "https://www.youtube.com/results?search_query=sarcasmo+in+inglese+come+capire"
+          }
+        ]
+      },
+      {
+        "sub": "Inglese per conferenze",
+        "desc": "Keynote, breakout, Q&A, networking.",
+        "res": [
+          {
+            "t": "Conference English (EN)",
+            "u": "https://www.youtube.com/results?search_query=conference+english+vocabulary+phrases"
+          },
+          {
+            "t": "Inglese conferenze tech (IT)",
+            "u": "https://www.youtube.com/results?search_query=inglese+per+conferenze+tech+frasi"
+          }
+        ]
+      },
+      {
+        "sub": "Remote work English",
+        "desc": "Slack, Zoom, daily standup: inglese remoto.",
+        "res": [
+          {
+            "t": "Remote Work English (EN)",
+            "u": "https://www.youtube.com/results?search_query=remote+work+english+communication+tips"
+          },
+          {
+            "t": "Inglese lavoro remoto (IT)",
+            "u": "https://www.youtube.com/results?search_query=inglese+lavoro+da+remoto+consigli"
+          }
+        ]
+      },
+      {
+        "sub": "Mantenere l'inglese",
+        "desc": "Abitudini giornaliere per non perdere la lingua.",
+        "res": [
+          {
+            "t": "Maintain English (EN)",
+            "u": "https://www.youtube.com/results?search_query=maintain+english+fluency+tips"
+          },
+          {
+            "t": "Mantenere inglese (IT)",
+            "u": "https://www.youtube.com/results?search_query=mantenere+inglese+nel+tempo+abitudini"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cultures",
+    "icon": "🌍",
+    "name": "Culture del Mondo",
+    "color": "#00ACC1",
+    "short": "Culture",
+    "curriculum": [
+      {
+        "sub": "Cultura giapponese",
+        "desc": "Shintoismo, Zen, wa, omotenashi, stagionalita.",
+        "res": [
+          {
+            "t": "Japanese Culture (EN)",
+            "u": "https://www.youtube.com/results?search_query=japanese+culture+explained"
+          },
+          {
+            "t": "Cultura giapponese (IT)",
+            "u": "https://www.youtube.com/results?search_query=cultura+giapponese+spiegazione+tradizioni"
+          }
+        ]
+      },
+      {
+        "sub": "Cultura cinese",
+        "desc": "Confucianesimo, taoismo, medicina tradizionale.",
+        "res": [
+          {
+            "t": "Chinese Culture (EN)",
+            "u": "https://www.youtube.com/results?search_query=chinese+culture+explained"
+          },
+          {
+            "t": "Cultura cinese (IT)",
+            "u": "https://www.youtube.com/results?search_query=cultura+cinese+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Cultura indiana",
+        "desc": "Induismo, caste, yoga, Ayurveda.",
+        "res": [
+          {
+            "t": "Indian Culture (EN)",
+            "u": "https://www.youtube.com/results?search_query=indian+culture+and+traditions"
+          },
+          {
+            "t": "Cultura indiana (IT)",
+            "u": "https://www.youtube.com/results?search_query=cultura+indiana+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Mondo arabo",
+        "desc": "Islam, Ramadan, ospitalita, calligrafia.",
+        "res": [
+          {
+            "t": "Arab Culture (EN)",
+            "u": "https://www.youtube.com/results?search_query=arab+culture+and+traditions"
+          },
+          {
+            "t": "Cultura araba (IT)",
+            "u": "https://www.youtube.com/results?search_query=cultura+araba+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Africa subsahariana",
+        "desc": "Nigeria, Etiopia, Kenya: tribu, arte, musica.",
+        "res": [
+          {
+            "t": "African Culture (EN)",
+            "u": "https://www.youtube.com/results?search_query=african+culture+documentary"
+          },
+          {
+            "t": "Culture africane (IT)",
+            "u": "https://www.youtube.com/results?search_query=culture+africane+documentario"
+          }
+        ]
+      },
+      {
+        "sub": "Latinoamerica",
+        "desc": "Maya, Aztechi, Inca, sincretismo.",
+        "res": [
+          {
+            "t": "Latin American Culture (EN)",
+            "u": "https://www.youtube.com/results?search_query=latin+american+culture+documentary"
+          },
+          {
+            "t": "Cultura latinoamericana (IT)",
+            "u": "https://www.youtube.com/results?search_query=cultura+latinoamericana+documentario"
+          }
+        ]
+      },
+      {
+        "sub": "Cultura nordica",
+        "desc": "Vichinghi, hygge, design scandinavo.",
+        "res": [
+          {
+            "t": "Nordic Culture (EN)",
+            "u": "https://www.youtube.com/results?search_query=nordic+culture+hygge+explained"
+          },
+          {
+            "t": "Cultura nordica (IT)",
+            "u": "https://www.youtube.com/results?search_query=cultura+scandinava+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Cultura mediterranea",
+        "desc": "Dieta mediterranea, dolce vita, famiglia.",
+        "res": [
+          {
+            "t": "Italian Culture (EN)",
+            "u": "https://www.youtube.com/results?search_query=italian+culture+explained+foreigners"
+          },
+          {
+            "t": "Cultura italiana (IT)",
+            "u": "https://www.youtube.com/results?search_query=cultura+italiana+tradizioni"
+          }
+        ]
+      },
+      {
+        "sub": "Cultura russa e slava",
+        "desc": "Ortodossia, letteratura, balletto.",
+        "res": [
+          {
+            "t": "Russian Culture (EN)",
+            "u": "https://www.youtube.com/results?search_query=russian+culture+and+traditions"
+          },
+          {
+            "t": "Cultura russa (IT)",
+            "u": "https://www.youtube.com/results?search_query=cultura+russa+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "K-Wave coreana",
+        "desc": "K-pop, K-drama, hanbok, cibo coreano.",
+        "res": [
+          {
+            "t": "Korean Culture (EN)",
+            "u": "https://www.youtube.com/results?search_query=korean+culture+explained"
+          },
+          {
+            "t": "Cultura coreana (IT)",
+            "u": "https://www.youtube.com/results?search_query=cultura+coreana+spiegazione+kpop"
+          }
+        ]
+      },
+      {
+        "sub": "Religioni del mondo",
+        "desc": "Cristianesimo, Islam, Induismo, Buddhismo.",
+        "res": [
+          {
+            "t": "World Religions (EN)",
+            "u": "https://www.youtube.com/results?search_query=world+religions+explained+simply"
+          },
+          {
+            "t": "Religioni del mondo (IT)",
+            "u": "https://www.youtube.com/results?search_query=religioni+del+mondo+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Buddhismo",
+        "desc": "4 nobili verita, ottuplice sentiero, Zen.",
+        "res": [
+          {
+            "t": "Buddhism Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=buddhism+explained+simply"
+          },
+          {
+            "t": "Buddhismo spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=buddhismo+spiegazione+semplice"
+          }
+        ]
+      },
+      {
+        "sub": "Islam: oltre stereotipi",
+        "desc": "5 pilastri, sufismo, arte, scienza.",
+        "res": [
+          {
+            "t": "Islam Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=islam+explained+simply"
+          },
+          {
+            "t": "Islam spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=islam+spiegazione+5+pilastri"
+          }
+        ]
+      },
+      {
+        "sub": "Induismo",
+        "desc": "Trimurti, karma, dharma, Diwali, Holi.",
+        "res": [
+          {
+            "t": "Hinduism Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=hinduism+explained+simply"
+          },
+          {
+            "t": "Induismo spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=induismo+spiegazione+semplice"
+          }
+        ]
+      },
+      {
+        "sub": "Cristianesimo globale",
+        "desc": "Cattolicesimo, protestanti, ortodossi.",
+        "res": [
+          {
+            "t": "Christianity Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=christianity+explained+denominations"
+          },
+          {
+            "t": "Cristianesimo globale (IT)",
+            "u": "https://www.youtube.com/results?search_query=cristianesimo+spiegazione+denominazioni"
+          }
+        ]
+      },
+      {
+        "sub": "Feste e tradizioni globali",
+        "desc": "Capodanno cinese, Diwali, Dia de Muertos.",
+        "res": [
+          {
+            "t": "World Festivals (EN)",
+            "u": "https://www.youtube.com/results?search_query=world+festivals+documentary"
+          },
+          {
+            "t": "Feste del mondo (IT)",
+            "u": "https://www.youtube.com/results?search_query=feste+tradizioni+del+mondo"
+          }
+        ]
+      },
+      {
+        "sub": "Musica etnica",
+        "desc": "Sitar, didgeridoo, kora, gamelan.",
+        "res": [
+          {
+            "t": "World Music Instruments (EN)",
+            "u": "https://www.youtube.com/results?search_query=traditional+musical+instruments+world"
+          },
+          {
+            "t": "Musica etnica (IT)",
+            "u": "https://www.youtube.com/results?search_query=musica+etnica+strumenti+tradizionali"
+          }
+        ]
+      },
+      {
+        "sub": "Danze tradizionali",
+        "desc": "Tango, flamenco, haka, bharatanatyam.",
+        "res": [
+          {
+            "t": "Traditional Dances (EN)",
+            "u": "https://www.youtube.com/results?search_query=traditional+dances+around+the+world"
+          },
+          {
+            "t": "Danze tradizionali (IT)",
+            "u": "https://www.youtube.com/results?search_query=danze+tradizionali+del+mondo"
+          }
+        ]
+      },
+      {
+        "sub": "Architettura nel mondo",
+        "desc": "Templi, moschee, cattedrali, pagode.",
+        "res": [
+          {
+            "t": "World Architecture (EN)",
+            "u": "https://www.youtube.com/results?search_query=architectural+styles+around+the+world"
+          },
+          {
+            "t": "Architettura mondiale (IT)",
+            "u": "https://www.youtube.com/results?search_query=stili+architettonici+nel+mondo"
+          }
+        ]
+      },
+      {
+        "sub": "Arte tribale e folk",
+        "desc": "Maschere africane, aborigeni, arte messicana.",
+        "res": [
+          {
+            "t": "Tribal Art (EN)",
+            "u": "https://www.youtube.com/results?search_query=tribal+art+documentary+africa"
+          },
+          {
+            "t": "Arte tribale (IT)",
+            "u": "https://www.youtube.com/results?search_query=arte+tribale+documentario"
+          }
+        ]
+      },
+      {
+        "sub": "Abiti tradizionali",
+        "desc": "Kimono, sari, kilt, dashiki, dirndl.",
+        "res": [
+          {
+            "t": "Traditional Clothing (EN)",
+            "u": "https://www.youtube.com/results?search_query=traditional+clothing+around+the+world"
+          },
+          {
+            "t": "Abiti tradizionali (IT)",
+            "u": "https://www.youtube.com/results?search_query=abiti+tradizionali+del+mondo"
+          }
+        ]
+      },
+      {
+        "sub": "Cucine del mondo",
+        "desc": "Ingredienti, tecniche, filosofia alimentare.",
+        "res": [
+          {
+            "t": "World Cuisine (EN)",
+            "u": "https://www.youtube.com/results?search_query=world+cuisine+documentary"
+          },
+          {
+            "t": "Cucine dal mondo (IT)",
+            "u": "https://www.youtube.com/results?search_query=cucine+del+mondo+documentario"
+          }
+        ]
+      },
+      {
+        "sub": "Riti di passaggio",
+        "desc": "Nascita, maggiore eta, matrimonio, morte.",
+        "res": [
+          {
+            "t": "Rites of Passage (EN)",
+            "u": "https://www.youtube.com/results?search_query=rites+of+passage+around+the+world"
+          },
+          {
+            "t": "Riti di passaggio (IT)",
+            "u": "https://www.youtube.com/results?search_query=riti+di+passaggio+culture+mondo"
+          }
+        ]
+      },
+      {
+        "sub": "Globalizzazione culturale",
+        "desc": "Omogeneizzazione vs diversita, McDonaldization.",
+        "res": [
+          {
+            "t": "Cultural Globalization (EN)",
+            "u": "https://www.youtube.com/results?search_query=cultural+globalization+explained"
+          },
+          {
+            "t": "Globalizzazione culturale (IT)",
+            "u": "https://www.youtube.com/results?search_query=globalizzazione+culturale+spiegazione"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "science",
+    "icon": "🔬",
+    "name": "Scienza & Tecnologia",
+    "color": "#00ACC1",
+    "short": "Scienza",
+    "curriculum": [
+      {
+        "sub": "Metodo scientifico",
+        "desc": "Osservazione, ipotesi, esperimento, peer review.",
+        "res": [
+          {
+            "t": "Scientific Method (EN)",
+            "u": "https://www.youtube.com/results?search_query=scientific+method+explained"
+          },
+          {
+            "t": "Metodo scientifico Geopop (IT)",
+            "u": "https://www.youtube.com/results?search_query=geopop+metodo+scientifico"
+          }
+        ]
+      },
+      {
+        "sub": "Fisica quantistica base",
+        "desc": "Dualita onda-particella, entanglement.",
+        "res": [
+          {
+            "t": "Quantum Physics (EN)",
+            "u": "https://www.youtube.com/results?search_query=quantum+physics+explained+simply"
+          },
+          {
+            "t": "Fisica quantistica (IT)",
+            "u": "https://www.youtube.com/results?search_query=fisica+quantistica+spiegazione+semplice"
+          }
+        ]
+      },
+      {
+        "sub": "Relativita",
+        "desc": "Einstein, dilatazione tempo, E=mc2, onde gravitazionali.",
+        "res": [
+          {
+            "t": "Relativity Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=general+relativity+explained+visually"
+          },
+          {
+            "t": "Relativita spiegata (IT)",
+            "u": "https://www.youtube.com/results?search_query=relativita+spiegazione+semplice"
+          }
+        ]
+      },
+      {
+        "sub": "Astrofisica",
+        "desc": "Ciclo vitale stelle, buchi neri, supernove.",
+        "res": [
+          {
+            "t": "Stars Life Cycle (EN)",
+            "u": "https://www.youtube.com/results?search_query=stars+life+cycle+explained"
+          },
+          {
+            "t": "Astrofisica base (IT)",
+            "u": "https://www.youtube.com/results?search_query=astrofisica+stelle+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Esopianeti",
+        "desc": "Zona abitabile, equazione Drake, ricerca vita.",
+        "res": [
+          {
+            "t": "Exoplanets Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=exoplanets+explained+how+we+find"
+          },
+          {
+            "t": "Esopianeti spiegati (IT)",
+            "u": "https://www.youtube.com/results?search_query=esopianeti+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "DNA e genetica",
+        "desc": "Struttura DNA, genoma umano, epigenetica.",
+        "res": [
+          {
+            "t": "DNA Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=dna+structure+function+explained"
+          },
+          {
+            "t": "DNA e genetica (IT)",
+            "u": "https://www.youtube.com/results?search_query=dna+genetica+spiegazione+semplice"
+          }
+        ]
+      },
+      {
+        "sub": "CRISPR e gene editing",
+        "desc": "CRISPR-Cas9, applicazioni, etica.",
+        "res": [
+          {
+            "t": "CRISPR Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=crispr+explained+simply"
+          },
+          {
+            "t": "CRISPR spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=crispr+spiegazione+editing+genetico"
+          }
+        ]
+      },
+      {
+        "sub": "Evoluzione",
+        "desc": "Darwin, selezione naturale, speciazione.",
+        "res": [
+          {
+            "t": "Evolution Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=theory+of+evolution+explained+simply"
+          },
+          {
+            "t": "Evoluzione Darwin (IT)",
+            "u": "https://www.youtube.com/results?search_query=teoria+evoluzione+darwin+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Neuroscienze",
+        "desc": "Neuroni, neuroplasticita, coscienza.",
+        "res": [
+          {
+            "t": "Brain Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=brain+explained+neuroscience+basics"
+          },
+          {
+            "t": "Neuroscienze base (IT)",
+            "u": "https://www.youtube.com/results?search_query=neuroscienze+spiegazione+cervello"
+          }
+        ]
+      },
+      {
+        "sub": "Chimica quotidiana",
+        "desc": "Atomi, molecole, reazioni nella vita reale.",
+        "res": [
+          {
+            "t": "Chemistry Basics (EN)",
+            "u": "https://www.youtube.com/results?search_query=chemistry+basics+explained+everyday"
+          },
+          {
+            "t": "Chimica spiegata (IT)",
+            "u": "https://www.youtube.com/results?search_query=chimica+base+spiegazione+semplice"
+          }
+        ]
+      },
+      {
+        "sub": "Energia nucleare",
+        "desc": "Fissione, fusione, ITER, sicurezza, scorie.",
+        "res": [
+          {
+            "t": "Nuclear Energy (EN)",
+            "u": "https://www.youtube.com/results?search_query=nuclear+energy+explained+fission+fusion"
+          },
+          {
+            "t": "Energia nucleare (IT)",
+            "u": "https://www.youtube.com/results?search_query=energia+nucleare+spiegazione+pro+contro"
+          }
+        ]
+      },
+      {
+        "sub": "Energie rinnovabili",
+        "desc": "Solare, eolico, idroelettrico, geotermico.",
+        "res": [
+          {
+            "t": "Renewable Energy (EN)",
+            "u": "https://www.youtube.com/results?search_query=renewable+energy+explained+2025"
+          },
+          {
+            "t": "Energie rinnovabili (IT)",
+            "u": "https://www.youtube.com/results?search_query=energie+rinnovabili+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Cambiamento climatico",
+        "desc": "Effetto serra, CO2, tipping points.",
+        "res": [
+          {
+            "t": "Climate Change (EN)",
+            "u": "https://www.youtube.com/results?search_query=climate+change+explained+2025"
+          },
+          {
+            "t": "Cambiamento climatico (IT)",
+            "u": "https://www.youtube.com/results?search_query=cambiamento+climatico+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Oceani e vita marina",
+        "desc": "Correnti, barriera corallina, plastica.",
+        "res": [
+          {
+            "t": "Ocean Documentary (EN)",
+            "u": "https://www.youtube.com/results?search_query=oceans+documentary+marine+life"
+          },
+          {
+            "t": "Oceani e mari (IT)",
+            "u": "https://www.youtube.com/results?search_query=oceani+documentario+vita+marina"
+          }
+        ]
+      },
+      {
+        "sub": "Vulcani e terremoti",
+        "desc": "Tettonica placche, scala Richter.",
+        "res": [
+          {
+            "t": "Volcanoes Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=how+volcanoes+work+explained"
+          },
+          {
+            "t": "Vulcani e terremoti (IT)",
+            "u": "https://www.youtube.com/results?search_query=vulcani+terremoti+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Medicina moderna",
+        "desc": "Immunoterapia, mRNA, longevita.",
+        "res": [
+          {
+            "t": "Longevity Science (EN)",
+            "u": "https://www.youtube.com/results?search_query=longevity+science+2025+explained"
+          },
+          {
+            "t": "Medicina moderna progressi (IT)",
+            "u": "https://www.youtube.com/results?search_query=medicina+moderna+progressi+recenti"
+          }
+        ]
+      },
+      {
+        "sub": "Vaccini e immunologia",
+        "desc": "Come funzionano, immunita di gregge.",
+        "res": [
+          {
+            "t": "How Vaccines Work (EN)",
+            "u": "https://www.youtube.com/results?search_query=how+vaccines+work+animation"
+          },
+          {
+            "t": "Vaccini spiegati (IT)",
+            "u": "https://www.youtube.com/results?search_query=vaccini+come+funzionano+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Sonno e ritmi circadiani",
+        "desc": "REM/NREM, igiene del sonno, melatonina.",
+        "res": [
+          {
+            "t": "Sleep Science (EN)",
+            "u": "https://www.youtube.com/results?search_query=sleep+science+explained+why+we+sleep"
+          },
+          {
+            "t": "Scienza del sonno (IT)",
+            "u": "https://www.youtube.com/results?search_query=scienza+del+sonno+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Nutrizione scientifica",
+        "desc": "Macro/micronutrienti, miti alimentari.",
+        "res": [
+          {
+            "t": "Nutrition Science (EN)",
+            "u": "https://www.youtube.com/results?search_query=nutrition+science+basics+explained"
+          },
+          {
+            "t": "Nutrizione scientifica (IT)",
+            "u": "https://www.youtube.com/results?search_query=nutrizione+scientifica+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Fisica delle particelle",
+        "desc": "Modello standard, quark, bosone Higgs, LHC.",
+        "res": [
+          {
+            "t": "Standard Model (EN)",
+            "u": "https://www.youtube.com/results?search_query=standard+model+particle+physics+explained"
+          },
+          {
+            "t": "Fisica particelle (IT)",
+            "u": "https://www.youtube.com/results?search_query=fisica+delle+particelle+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Teoria del caos",
+        "desc": "Effetto farfalla, frattali, sistemi complessi.",
+        "res": [
+          {
+            "t": "Chaos Theory (EN)",
+            "u": "https://www.youtube.com/results?search_query=chaos+theory+explained+simply"
+          },
+          {
+            "t": "Teoria del caos (IT)",
+            "u": "https://www.youtube.com/results?search_query=teoria+del+caos+spiegazione+semplice"
+          }
+        ]
+      },
+      {
+        "sub": "Matematica nella natura",
+        "desc": "Fibonacci, sezione aurea, pattern.",
+        "res": [
+          {
+            "t": "Fibonacci in Nature (EN)",
+            "u": "https://www.youtube.com/results?search_query=fibonacci+sequence+in+nature"
+          },
+          {
+            "t": "Fibonacci natura (IT)",
+            "u": "https://www.youtube.com/results?search_query=sequenza+fibonacci+natura+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Scienza dei materiali",
+        "desc": "Grafene, aerogel, metamateriali.",
+        "res": [
+          {
+            "t": "Graphene Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=graphene+explained+future+materials"
+          },
+          {
+            "t": "Materiali del futuro (IT)",
+            "u": "https://www.youtube.com/results?search_query=materiali+del+futuro+scienza"
+          }
+        ]
+      },
+      {
+        "sub": "Esplorazione spaziale 2026",
+        "desc": "Artemis, Marte, Starship, telescopi.",
+        "res": [
+          {
+            "t": "Space Exploration 2026 (EN)",
+            "u": "https://www.youtube.com/results?search_query=space+exploration+2025+artemis+starship"
+          },
+          {
+            "t": "Esplorazione spaziale (IT)",
+            "u": "https://www.youtube.com/results?search_query=esplorazione+spaziale+2025+marte+artemis"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "scifi",
+    "icon": "🚀",
+    "name": "Fantascienza: Libri, Film, Idee",
+    "color": "#7C4DFF",
+    "short": "Fantasc.",
+    "curriculum": [
+      {
+        "sub": "Storia della fantascienza",
+        "desc": "Da Verne e Wells alla Golden Age.",
+        "res": [
+          {
+            "t": "History of Sci-Fi (EN)",
+            "u": "https://www.youtube.com/results?search_query=history+of+science+fiction+literature"
+          },
+          {
+            "t": "Storia fantascienza (IT)",
+            "u": "https://www.youtube.com/results?search_query=storia+della+fantascienza+letteratura"
+          }
+        ]
+      },
+      {
+        "sub": "Isaac Asimov",
+        "desc": "Robotica, Fondazione, 3 leggi della robotica.",
+        "res": [
+          {
+            "t": "Asimov Foundation (EN)",
+            "u": "https://www.youtube.com/results?search_query=asimov+foundation+series+explained"
+          },
+          {
+            "t": "Asimov spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=isaac+asimov+fondazione+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Philip K. Dick",
+        "desc": "Ubik, Ma gli androidi, Minority Report.",
+        "res": [
+          {
+            "t": "Philip K Dick (EN)",
+            "u": "https://www.youtube.com/results?search_query=philip+k+dick+philosophy+explained"
+          },
+          {
+            "t": "Dick spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=philip+k+dick+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Arthur C. Clarke",
+        "desc": "2001 Odissea, Incontro con Rama.",
+        "res": [
+          {
+            "t": "2001 Space Odyssey (EN)",
+            "u": "https://www.youtube.com/results?search_query=2001+a+space+odyssey+explained"
+          },
+          {
+            "t": "Arthur C Clarke (IT)",
+            "u": "https://www.youtube.com/results?search_query=arthur+c+clarke+opere+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Cyberpunk",
+        "desc": "Neuromante, Snow Crash: high tech low life.",
+        "res": [
+          {
+            "t": "Cyberpunk Genre (EN)",
+            "u": "https://www.youtube.com/results?search_query=cyberpunk+genre+explained"
+          },
+          {
+            "t": "Cyberpunk spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=cyberpunk+genere+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Space Opera",
+        "desc": "Dune, Star Wars, The Expanse.",
+        "res": [
+          {
+            "t": "Space Opera (EN)",
+            "u": "https://www.youtube.com/results?search_query=space+opera+genre+explained"
+          },
+          {
+            "t": "Space opera spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=space+opera+genere+fantascienza"
+          }
+        ]
+      },
+      {
+        "sub": "Distopia classica",
+        "desc": "1984, Fahrenheit 451, Brave New World.",
+        "res": [
+          {
+            "t": "1984 Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=1984+george+orwell+explained"
+          },
+          {
+            "t": "Distopia Orwell (IT)",
+            "u": "https://www.youtube.com/results?search_query=1984+orwell+analisi+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Fantascienza italiana",
+        "desc": "Buzzati, Primo Levi, Evangelisti.",
+        "res": [
+          {
+            "t": "Fantascienza italiana (IT)",
+            "u": "https://www.youtube.com/results?search_query=fantascienza+italiana+letteratura+autori"
+          },
+          {
+            "t": "Buzzati fantascienza (IT)",
+            "u": "https://www.youtube.com/results?search_query=buzzati+fantascienza+racconti"
+          }
+        ]
+      },
+      {
+        "sub": "Star Trek e filosofia",
+        "desc": "Prime Directive, post-scarsita, diversita.",
+        "res": [
+          {
+            "t": "Star Trek Philosophy (EN)",
+            "u": "https://www.youtube.com/results?search_query=star+trek+philosophy+explained"
+          },
+          {
+            "t": "Star Trek filosofia (IT)",
+            "u": "https://www.youtube.com/results?search_query=star+trek+filosofia+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Star Wars e mitologia",
+        "desc": "Viaggio dell'eroe, la Forza, Jedi.",
+        "res": [
+          {
+            "t": "Star Wars Hero's Journey (EN)",
+            "u": "https://www.youtube.com/results?search_query=star+wars+hero+journey+mythology"
+          },
+          {
+            "t": "Star Wars mitologia (IT)",
+            "u": "https://www.youtube.com/results?search_query=star+wars+mitologia+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Blade Runner",
+        "desc": "Replicanti, test Voight-Kampff, transumanesimo.",
+        "res": [
+          {
+            "t": "Blade Runner Philosophy (EN)",
+            "u": "https://www.youtube.com/results?search_query=blade+runner+philosophy+what+is+human"
+          },
+          {
+            "t": "Blade Runner analisi (IT)",
+            "u": "https://www.youtube.com/results?search_query=blade+runner+analisi+filosofica"
+          }
+        ]
+      },
+      {
+        "sub": "Matrix e simulazione",
+        "desc": "Realta simulata, scelta, risveglio.",
+        "res": [
+          {
+            "t": "Matrix Philosophy (EN)",
+            "u": "https://www.youtube.com/results?search_query=matrix+philosophy+analysis+simulation"
+          },
+          {
+            "t": "Matrix spiegazione (IT)",
+            "u": "https://www.youtube.com/results?search_query=matrix+film+spiegazione+filosofica"
+          }
+        ]
+      },
+      {
+        "sub": "Interstellar e scienza reale",
+        "desc": "Kip Thorne, dilatazione, buchi neri.",
+        "res": [
+          {
+            "t": "Interstellar Science (EN)",
+            "u": "https://www.youtube.com/results?search_query=interstellar+science+explained+kip+thorne"
+          },
+          {
+            "t": "Interstellar spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=interstellar+film+spiegazione+scientifica"
+          }
+        ]
+      },
+      {
+        "sub": "Dune: ecologia e potere",
+        "desc": "Herbert: spezia, deserti, jihad, ecologia.",
+        "res": [
+          {
+            "t": "Dune Philosophy (EN)",
+            "u": "https://www.youtube.com/results?search_query=dune+philosophy+analysis+ecology"
+          },
+          {
+            "t": "Dune analisi (IT)",
+            "u": "https://www.youtube.com/results?search_query=dune+analisi+trama+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Black Mirror",
+        "desc": "Tech distopica: social score, AI, VR.",
+        "res": [
+          {
+            "t": "Black Mirror Analysis (EN)",
+            "u": "https://www.youtube.com/results?search_query=black+mirror+episodes+analysis"
+          },
+          {
+            "t": "Black Mirror spiegazione (IT)",
+            "u": "https://www.youtube.com/results?search_query=black+mirror+analisi+episodi"
+          }
+        ]
+      },
+      {
+        "sub": "AI nella fantascienza",
+        "desc": "Her, Ex Machina, Io Robot.",
+        "res": [
+          {
+            "t": "AI in Science Fiction (EN)",
+            "u": "https://www.youtube.com/results?search_query=artificial+intelligence+in+science+fiction"
+          },
+          {
+            "t": "AI nella fantascienza (IT)",
+            "u": "https://www.youtube.com/results?search_query=intelligenza+artificiale+fantascienza+film"
+          }
+        ]
+      },
+      {
+        "sub": "Ucronia",
+        "desc": "The Man in the High Castle, Fatherland.",
+        "res": [
+          {
+            "t": "Alternate History (EN)",
+            "u": "https://www.youtube.com/results?search_query=alternate+history+fiction+explained"
+          },
+          {
+            "t": "Ucronia spiegata (IT)",
+            "u": "https://www.youtube.com/results?search_query=ucronia+storia+alternativa+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Primo contatto",
+        "desc": "Arrival, Contact: linguistica e alieni.",
+        "res": [
+          {
+            "t": "Arrival Movie Analysis (EN)",
+            "u": "https://www.youtube.com/results?search_query=arrival+movie+linguistics+analysis"
+          },
+          {
+            "t": "Arrival analisi (IT)",
+            "u": "https://www.youtube.com/results?search_query=arrival+film+analisi+linguistica"
+          }
+        ]
+      },
+      {
+        "sub": "Colonizzazione spaziale",
+        "desc": "The Expanse, Mars Trilogy.",
+        "res": [
+          {
+            "t": "Mars Trilogy Analysis (EN)",
+            "u": "https://www.youtube.com/results?search_query=mars+trilogy+kim+stanley+robinson"
+          },
+          {
+            "t": "Colonizzazione spazio sci-fi (IT)",
+            "u": "https://www.youtube.com/results?search_query=colonizzazione+spaziale+fantascienza+libri"
+          }
+        ]
+      },
+      {
+        "sub": "Viaggi nel tempo",
+        "desc": "Dark, Tenet, Predestination: paradossi.",
+        "res": [
+          {
+            "t": "Time Travel Movies (EN)",
+            "u": "https://www.youtube.com/results?search_query=time+travel+movies+paradox+explained"
+          },
+          {
+            "t": "Viaggi nel tempo sci-fi (IT)",
+            "u": "https://www.youtube.com/results?search_query=viaggi+nel+tempo+fantascienza+film"
+          }
+        ]
+      },
+      {
+        "sub": "Fantascienza cinese",
+        "desc": "Three-Body Problem, Liu Cixin.",
+        "res": [
+          {
+            "t": "Three Body Problem (EN)",
+            "u": "https://www.youtube.com/results?search_query=three+body+problem+liu+cixin+explained"
+          },
+          {
+            "t": "Three Body Problem (IT)",
+            "u": "https://www.youtube.com/results?search_query=three+body+problem+spiegazione+italiano"
+          }
+        ]
+      },
+      {
+        "sub": "Transumanesimo",
+        "desc": "Ghost in the Shell, mente e corpo digitale.",
+        "res": [
+          {
+            "t": "Transhumanism Sci-Fi (EN)",
+            "u": "https://www.youtube.com/results?search_query=transhumanism+science+fiction+analysis"
+          },
+          {
+            "t": "Transumanesimo spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=transumanesimo+spiegazione+filosofia"
+          }
+        ]
+      },
+      {
+        "sub": "Solarpunk e hopepunk",
+        "desc": "Oltre la distopia: futuro verde e positivo.",
+        "res": [
+          {
+            "t": "Solarpunk Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=solarpunk+genre+explained"
+          },
+          {
+            "t": "Solarpunk hopepunk (IT)",
+            "u": "https://www.youtube.com/results?search_query=solarpunk+genere+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Sci-fi: predizioni azzeccate",
+        "desc": "Cosa ha previsto la sci-fi e cosa no.",
+        "res": [
+          {
+            "t": "Sci-Fi Predictions True (EN)",
+            "u": "https://www.youtube.com/results?search_query=science+fiction+predictions+that+came+true"
+          },
+          {
+            "t": "Predizioni fantascienza (IT)",
+            "u": "https://www.youtube.com/results?search_query=predizioni+fantascienza+avverate"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "mindset",
+    "icon": "🧠",
+    "name": "Mindset, Filosofia & Soft Skills",
+    "color": "#F4511E",
+    "short": "Mindset",
+    "curriculum": [
+      {
+        "sub": "Stoicismo pratico",
+        "desc": "Marco Aurelio, controllo, memento mori.",
+        "res": [
+          {
+            "t": "Stoicism Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=stoicism+explained+simply+daily+practice"
+          },
+          {
+            "t": "Stoicismo spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=stoicismo+spiegazione+semplice+pratica"
+          }
+        ]
+      },
+      {
+        "sub": "Socrate e Platone",
+        "desc": "Dialoghi socratici, mito della caverna.",
+        "res": [
+          {
+            "t": "Plato's Cave (EN)",
+            "u": "https://www.youtube.com/results?search_query=plato+allegory+of+the+cave+explained"
+          },
+          {
+            "t": "Platone spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=platone+mito+della+caverna+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Aristotele e l'etica",
+        "desc": "Etica nicomachea, virtu, giusto mezzo.",
+        "res": [
+          {
+            "t": "Aristotle Ethics (EN)",
+            "u": "https://www.youtube.com/results?search_query=aristotle+nicomachean+ethics+explained"
+          },
+          {
+            "t": "Aristotele etica (IT)",
+            "u": "https://www.youtube.com/results?search_query=aristotele+etica+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Esistenzialismo",
+        "desc": "Sartre, Camus: assurdita, Sisifo felice.",
+        "res": [
+          {
+            "t": "Existentialism (EN)",
+            "u": "https://www.youtube.com/results?search_query=existentialism+philosophy+explained"
+          },
+          {
+            "t": "Esistenzialismo spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=esistenzialismo+sartre+camus+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Nietzsche",
+        "desc": "Dio e morto, eterno ritorno, oltreuomo.",
+        "res": [
+          {
+            "t": "Nietzsche Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=nietzsche+philosophy+explained+simply"
+          },
+          {
+            "t": "Nietzsche spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=nietzsche+filosofia+spiegazione+semplice"
+          }
+        ]
+      },
+      {
+        "sub": "Tao e Zen",
+        "desc": "Tao Te Ching, wu wei, koan Zen.",
+        "res": [
+          {
+            "t": "Taoism Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=taoism+explained+simply"
+          },
+          {
+            "t": "Tao e Zen (IT)",
+            "u": "https://www.youtube.com/results?search_query=taoismo+zen+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Mindfulness e meditazione",
+        "desc": "MBSR, meditazione pratica, benefici.",
+        "res": [
+          {
+            "t": "Mindfulness Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=mindfulness+explained+science"
+          },
+          {
+            "t": "Mindfulness meditazione (IT)",
+            "u": "https://www.youtube.com/results?search_query=mindfulness+meditazione+guida+iniziare"
+          }
+        ]
+      },
+      {
+        "sub": "Abitudini atomiche",
+        "desc": "James Clear: cue, craving, 1% better.",
+        "res": [
+          {
+            "t": "Atomic Habits Summary (EN)",
+            "u": "https://www.youtube.com/results?search_query=atomic+habits+james+clear+summary"
+          },
+          {
+            "t": "Abitudini atomiche (IT)",
+            "u": "https://www.youtube.com/results?search_query=abitudini+atomiche+riassunto+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Gestione del tempo",
+        "desc": "Eisenhower matrix, time blocking, Parkinson.",
+        "res": [
+          {
+            "t": "Time Management (EN)",
+            "u": "https://www.youtube.com/results?search_query=time+management+techniques+productive"
+          },
+          {
+            "t": "Gestione del tempo (IT)",
+            "u": "https://www.youtube.com/results?search_query=gestione+del+tempo+tecniche+produttivita"
+          }
+        ]
+      },
+      {
+        "sub": "Deep Work",
+        "desc": "Cal Newport: lavoro profondo, flusso.",
+        "res": [
+          {
+            "t": "Deep Work Summary (EN)",
+            "u": "https://www.youtube.com/results?search_query=deep+work+cal+newport+summary"
+          },
+          {
+            "t": "Deep Work spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=deep+work+spiegazione+cal+newport"
+          }
+        ]
+      },
+      {
+        "sub": "Public speaking",
+        "desc": "Struttura discorso, storytelling, gestione ansia.",
+        "res": [
+          {
+            "t": "Public Speaking Tips (EN)",
+            "u": "https://www.youtube.com/results?search_query=public+speaking+tips+ted+talk"
+          },
+          {
+            "t": "Public speaking (IT)",
+            "u": "https://www.youtube.com/results?search_query=public+speaking+consigli+parlare+pubblico"
+          }
+        ]
+      },
+      {
+        "sub": "Negoziazione",
+        "desc": "BATNA, mirroring, labelling, ancoraggio.",
+        "res": [
+          {
+            "t": "Negotiation Skills (EN)",
+            "u": "https://www.youtube.com/results?search_query=negotiation+skills+explained+chris+voss"
+          },
+          {
+            "t": "Negoziazione tecniche (IT)",
+            "u": "https://www.youtube.com/results?search_query=negoziazione+tecniche+consigli+pratici"
+          }
+        ]
+      },
+      {
+        "sub": "Leadership moderna",
+        "desc": "Servant leadership, sicurezza psicologica.",
+        "res": [
+          {
+            "t": "Leadership Styles (EN)",
+            "u": "https://www.youtube.com/results?search_query=leadership+styles+explained+modern"
+          },
+          {
+            "t": "Leadership spiegata (IT)",
+            "u": "https://www.youtube.com/results?search_query=leadership+moderna+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Intelligenza emotiva",
+        "desc": "Goleman: self-awareness, empathy.",
+        "res": [
+          {
+            "t": "Emotional Intelligence (EN)",
+            "u": "https://www.youtube.com/results?search_query=emotional+intelligence+goleman+explained"
+          },
+          {
+            "t": "Intelligenza emotiva (IT)",
+            "u": "https://www.youtube.com/results?search_query=intelligenza+emotiva+spiegazione+goleman"
+          }
+        ]
+      },
+      {
+        "sub": "Decision making",
+        "desc": "Bias cognitivi, costi sommersi, paralisi.",
+        "res": [
+          {
+            "t": "Decision Making (EN)",
+            "u": "https://www.youtube.com/results?search_query=decision+making+psychology+biases"
+          },
+          {
+            "t": "Decision making (IT)",
+            "u": "https://www.youtube.com/results?search_query=prendere+decisioni+psicologia+bias"
+          }
+        ]
+      },
+      {
+        "sub": "Minimalismo",
+        "desc": "Possedere meno, vivere con intenzione.",
+        "res": [
+          {
+            "t": "Minimalism Documentary (EN)",
+            "u": "https://www.youtube.com/results?search_query=minimalism+documentary+less+is+now"
+          },
+          {
+            "t": "Minimalismo spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=minimalismo+spiegazione+vantaggi"
+          }
+        ]
+      },
+      {
+        "sub": "Ikigai e scopo",
+        "desc": "Intersezione passione, missione, vocazione.",
+        "res": [
+          {
+            "t": "Ikigai Explained (EN)",
+            "u": "https://www.youtube.com/results?search_query=ikigai+explained+japanese+concept"
+          },
+          {
+            "t": "Ikigai spiegato (IT)",
+            "u": "https://www.youtube.com/results?search_query=ikigai+significato+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Gestione dello stress",
+        "desc": "Cortisolo, respiro, esercizio, confini.",
+        "res": [
+          {
+            "t": "Stress Management (EN)",
+            "u": "https://www.youtube.com/results?search_query=stress+management+techniques+science"
+          },
+          {
+            "t": "Gestione stress (IT)",
+            "u": "https://www.youtube.com/results?search_query=gestione+stress+tecniche+efficaci"
+          }
+        ]
+      },
+      {
+        "sub": "Growth mindset",
+        "desc": "Dweck: fixed vs growth, neuroplasticita.",
+        "res": [
+          {
+            "t": "Growth Mindset (EN)",
+            "u": "https://www.youtube.com/results?search_query=growth+mindset+carol+dweck+explained"
+          },
+          {
+            "t": "Mentalita di crescita (IT)",
+            "u": "https://www.youtube.com/results?search_query=mentalita+di+crescita+dweck+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Resilienza e antifragilita",
+        "desc": "Taleb: fragile, robusto, antifragile.",
+        "res": [
+          {
+            "t": "Antifragile Summary (EN)",
+            "u": "https://www.youtube.com/results?search_query=antifragile+taleb+summary+explained"
+          },
+          {
+            "t": "Antifragilita spiegata (IT)",
+            "u": "https://www.youtube.com/results?search_query=antifragilita+taleb+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Networking autentico",
+        "desc": "Relazioni professionali vere, non biglietti visita.",
+        "res": [
+          {
+            "t": "Networking Tips (EN)",
+            "u": "https://www.youtube.com/results?search_query=networking+tips+for+introverts"
+          },
+          {
+            "t": "Networking autentico (IT)",
+            "u": "https://www.youtube.com/results?search_query=networking+autentico+consigli"
+          }
+        ]
+      },
+      {
+        "sub": "Pensiero critico",
+        "desc": "Bias, cherry picking, correlazione vs causalita.",
+        "res": [
+          {
+            "t": "Critical Thinking (EN)",
+            "u": "https://www.youtube.com/results?search_query=critical+thinking+skills+explained"
+          },
+          {
+            "t": "Pensiero critico (IT)",
+            "u": "https://www.youtube.com/results?search_query=pensiero+critico+spiegazione"
+          }
+        ]
+      },
+      {
+        "sub": "Crescita professionale IT",
+        "desc": "Personal branding dev, open source, mentorship.",
+        "res": [
+          {
+            "t": "Career Growth Developer (EN)",
+            "u": "https://www.youtube.com/results?search_query=software+developer+career+growth+senior"
+          },
+          {
+            "t": "Crescita professionale IT (IT)",
+            "u": "https://www.youtube.com/results?search_query=carriera+sviluppatore+software+consigli"
+          }
+        ]
+      },
+      {
+        "sub": "Filosofia contemporanea e AI",
+        "desc": "Bostrom, Tegmark: superintelligenza, allineamento.",
+        "res": [
+          {
+            "t": "Superintelligence Bostrom (EN)",
+            "u": "https://www.youtube.com/results?search_query=superintelligence+nick+bostrom+summary"
+          },
+          {
+            "t": "AI alignment filosofia (IT)",
+            "u": "https://www.youtube.com/results?search_query=allineamento+intelligenza+artificiale+filosofia"
+          }
+        ]
+      }
+    ]
+  }
+];
+
+// SCHEDULE GENERATION
+const START = new Date(2026, 4, 6);
+const END = new Date(2026, 11, 31);
+const NOW = new Date();
+const TODAY_STR = `${NOW.getFullYear()}-${String(NOW.getMonth()+1).padStart(2,'0')}-${String(NOW.getDate()).padStart(2,'0')}`;
+
+const topicCounters = TOPICS.map(() => 0);
+const schedule = [];
+const scheduleByKey = {};
+
+function fmt(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+
+for (let d = new Date(START), ti = 0; d <= END; d.setDate(d.getDate() + 1), ti++) {
+  const t = TOPICS[ti % TOPICS.length];
+  const curIdx = topicCounters[ti % TOPICS.length]++;
+  const cur = t.curriculum[curIdx] || { sub: t.name, desc: "", res: [] };
+  const entry = {
+    key: fmt(d), dateObj: new Date(d), dayNum: d.getDate(), monthIdx: d.getMonth(),
+    monthName: d.toLocaleDateString("it-IT", { month: "long" }), year: d.getFullYear(), dow: d.getDay(),
+    topicId: t.id, topic: t, sub: cur.sub, desc: cur.desc, res: cur.res,
+    completed: false, notes: ""
+  };
+  schedule.push(entry);
+  scheduleByKey[entry.key] = entry;
+}
+
+// STATE
+const LS_KEY = "percorso_crescita_2026_v4";
+function loadState() {
+  const raw = localStorage.getItem(LS_KEY);
+  if (!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    for (const [k, v] of Object.entries(data)) {
+      if (scheduleByKey[k]) { scheduleByKey[k].completed = !!v.completed; scheduleByKey[k].notes = v.notes || ""; }
+    }
+  } catch (e) {}
+}
+function saveState() {
+  const data = {};
+  for (const e of schedule) { if (e.completed || e.notes) data[e.key] = { completed: e.completed, notes: e.notes }; }
+  localStorage.setItem(LS_KEY, JSON.stringify(data));
+}
+
+// STATS
+function getStats() {
+  let done = 0, streak = 0;
+  for (const e of schedule) { if (e.completed) done++; }
+  const checkEnd = NOW < START ? null : (NOW > END ? END : NOW);
+  if (checkEnd) {
+    const checkKey = fmt(checkEnd);
+    for (let i = schedule.length - 1; i >= 0; i--) {
+      if (schedule[i].key > checkKey) continue;
+      if (schedule[i].completed) streak++; else break;
+    }
+  }
+  const pct = schedule.length > 0 ? Math.round((done / schedule.length) * 100) : 0;
+  const todayEntry = scheduleByKey[TODAY_STR];
+  return { done, total: schedule.length, pct, streak, todayEntry };
+}
+
+function renderCalendar() {
+  const container = document.getElementById("calendar");
+  const filterTopic = document.getElementById("filterTopic").value;
+  const filterStatus = document.getElementById("filterStatus").value;
+  const searchText = document.getElementById("searchNotes").value.toLowerCase();
+  const months = {};
+  for (const e of schedule) {
+    if (filterTopic !== "all" && e.topic.id !== filterTopic) continue;
+    if (filterStatus === "completed" && !e.completed) continue;
+    if (filterStatus === "pending" && e.completed) continue;
+    if (searchText && !e.notes.toLowerCase().includes(searchText) && !e.sub.toLowerCase().includes(searchText)) continue;
+    const mKey = `${e.year}-${e.monthIdx}`;
+    if (!months[mKey]) months[mKey] = { label: e.monthName + " " + e.year, entries: [], year: e.year, month: e.monthIdx };
+    months[mKey].entries.push(e);
+  }
+  const mkeys = Object.keys(months).sort((a, b) => {
+    const [ya, ma] = a.split("-").map(Number); const [yb, mb] = b.split("-").map(Number);
+    return ya !== yb ? ya - yb : ma - mb;
+  });
+  if (mkeys.length === 0) {
+    container.innerHTML = "<div style='text-align:center;color:var(--text2);padding:40px;'>Nessun giorno trovato.</div>";
+    return;
+  }
+  let html = "";
+  const dn = ["Dom","Lun","Mar","Mer","Gio","Ven","Sab"];
+  const gh = "<div class='day-grid'>" + dn.map(d => `<div class="dow-label">${d}</div>`).join("") + "</div>";
+  for (const mkey of mkeys) {
+    const m = months[mkey];
+    html += `<div class="month-section"><div class="month-header">${m.label}</div>`;
+    html += gh;
+    let gc = "";
+    const fd = m.entries[0].dow;
+    for (let i = 0; i < fd; i++) gc += "<div class='day-card placeholder'></div>";
+    for (const e of m.entries) {
+      let cls = "day-card";
+      if (e.key === TODAY_STR) cls += " today";
+      if (e.completed) cls += " completed";
+      gc += `<div class="${cls}" data-key="${e.key}" style="border-left:3px solid ${e.topic.color};" title="${e.topic.name}: ${e.sub}"><div class="day-num">${e.dayNum}</div><div class="topic-icon">${e.topic.icon}</div><div class="topic-tag">${e.sub}</div></div>`;
+    }
+    html += `<div class="day-grid">${gc}</div></div>`;
+  }
+  container.innerHTML = html;
+  container.querySelectorAll(".day-card:not(.placeholder)").forEach(c => c.addEventListener("click", () => openModal(c.dataset.key)));
+}
+
+function renderStats() {
+  const s = getStats();
+  document.getElementById("statDone").textContent = s.done;
+  document.getElementById("statPct").textContent = s.pct + "%";
+  document.getElementById("statStreak").textContent = s.streak;
+  document.getElementById("statToday").textContent = s.todayEntry ? s.todayEntry.topic.icon + " " + s.todayEntry.sub : "--";
+  document.getElementById("progressLabel").textContent = s.done + " / " + s.total;
+  document.getElementById("progressFill").style.width = s.pct + "%";
+}
+
+function renderFilters() {
+  const sel = document.getElementById("filterTopic");
+  sel.innerHTML = "<option value='all'>Tutti i topic</option>" + TOPICS.map(t => `<option value="${t.id}">${t.icon} ${t.name}</option>`).join("");
+}
+
+function openModal(key) {
+  const e = scheduleByKey[key]; if (!e) return;
+  const overlay = document.getElementById("modalOverlay");
+  const dn = ["Domenica","Lunedi","Martedi","Mercoledi","Giovedi","Venerdi","Sabato"];
+  const rh = e.res.map(r => `<div class="res-item"><span class="res-icon">&#9654;</span><a class="yt-link" href="${r.u}" target="_blank">${r.t}</a></div>`).join("");
+  overlay.innerHTML = `<div class="modal"><h2>${e.dayNum} ${e.monthName} ${e.year}</h2><div class="modal-date">${dn[e.dow]}</div><div class="modal-topic">${e.topic.icon} ${e.topic.name}</div><div class="modal-subtopic">${e.sub}</div><div class="modal-desc">${e.desc}</div><label class="check-row"><input type="checkbox" id="chkCompleted" ${e.completed ? "checked" : ""}><span>Completato</span></label><label for="txtNotes">Cosa ho imparato?</label><textarea id="txtNotes" placeholder="Scrivi qui i tuoi appunti...">${e.notes || ""}</textarea><div class="suggestions"><h4>Risorse consigliate</h4>${rh}</div><div class="actions"><button class="btn btn-outline" id="btnClose">Chiudi</button><button class="btn" id="btnSave">Salva</button></div></div>`;
+  overlay.style.display = "flex";
+  document.getElementById("btnClose").onclick = () => { overlay.style.display = "none"; };
+  document.getElementById("btnSave").onclick = () => {
+    e.completed = document.getElementById("chkCompleted").checked;
+    e.notes = document.getElementById("txtNotes").value.trim();
+    saveState(); renderAll(); overlay.style.display = "none";
+  };
+  document.getElementById("txtNotes").onkeydown = (ev) => { if (ev.ctrlKey && ev.key === "Enter") document.getElementById("btnSave").click(); };
+}
+
+function renderAll() { renderStats(); renderCalendar(); }
+function scrollToToday() { const el = document.querySelector(".day-card.today"); if (el) el.scrollIntoView({ behavior: "smooth", block: "center" }); }
+
+// EXPORT / IMPORT per sync cross-device
+function exportData() {
+  const data = {};
+  for (const e of schedule) { if (e.completed || e.notes) data[e.key] = { completed: e.completed, notes: e.notes }; }
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  a.download = "percorso-crescita-" + new Date().toISOString().slice(0,10) + ".json";
+  a.click();
+}
+
+function importData() {
+  const input = document.createElement("input"); input.type = "file"; input.accept = ".json";
+  input.onchange = (ev) => {
+    const file = ev.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (re) => {
+      try {
+        const data = JSON.parse(re.target.result);
+        let count = 0;
+        for (const [k, v] of Object.entries(data)) {
+          if (scheduleByKey[k]) { scheduleByKey[k].completed = !!v.completed; scheduleByKey[k].notes = v.notes || ""; count++; }
+        }
+        saveState(); renderAll();
+        alert("Importati " + count + " giorni di progressi.");
+      } catch (e) { alert("Errore: file JSON non valido."); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// INIT
+document.getElementById("modalOverlay").onclick = (ev) => { if (ev.target === ev.currentTarget) ev.currentTarget.style.display = "none"; };
+loadState(); renderFilters(); renderAll();
+document.getElementById("filterTopic").onchange = renderCalendar;
+document.getElementById("filterStatus").onchange = renderCalendar;
+document.getElementById("searchNotes").oninput = renderCalendar;
+document.getElementById("btnScrollToday").onclick = scrollToToday;
+document.getElementById("btnReset").onclick = () => {
+  if (confirm("Cancellare TUTTI i progressi e le note?")) { localStorage.removeItem(LS_KEY); for (const e of schedule) { e.completed = false; e.notes = ""; } renderAll(); }
+};
+document.onkeydown = (ev) => { if (ev.key === "t" && ev.ctrlKey) { ev.preventDefault(); scrollToToday(); } };
+setTimeout(scrollToToday, 400);
+
+</script>
+</body>
+</html>
