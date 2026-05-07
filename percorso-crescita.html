@@ -66,16 +66,40 @@ footer{text-align:center;color:var(--text2);font-size:.75rem;padding:24px 0}
 .scroll-today{position:fixed;bottom:20px;right:20px;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 16px rgba(108,92,231,.5);z-index:50;display:flex;align-items:center;justify-content:center;transition:transform .2s}
 .scroll-today:hover{transform:scale(1.1)}
 @media(max-width:640px){
-  .day-grid{grid-template-columns:repeat(4,1fr);gap:5px}
-  .day-card{aspect-ratio:auto;padding:6px 3px;min-height:58px}
-  .day-card .topic-icon{font-size:.85rem}
-  .day-card .topic-tag{font-size:.48rem;-webkit-line-clamp:1}
-  .stats-row{gap:8px}
-  .stat-card{min-width:70px;padding:10px}
+  .container{padding:8px}
+  header{padding:14px;margin-bottom:10px;border-radius:10px}
+  header h1{font-size:1.15rem}
+  header .subtitle{font-size:.7rem}
+  .stats-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .stat-card{min-width:0;padding:10px 8px}
   .stat-card .value{font-size:1.3rem}
-  header{padding:16px}
-  header h1{font-size:1.3rem}
-  .modal{padding:20px}
+  .stat-card .label{font-size:.65rem}
+  .progress-wrap{margin-top:10px}
+  .progress-wrap .label-row{font-size:.7rem}
+  .controls{gap:5px}
+  .controls select{font-size:.78rem;padding:7px 10px;flex:1;min-width:0}
+  .controls input{min-width:0;font-size:.78rem;padding:7px 10px;flex:2}
+  .btn{font-size:.78rem;padding:7px 12px}
+  .btn-sm{font-size:.72rem;padding:5px 8px}
+  .month-section{margin-bottom:16px}
+  .month-header{font-size:.9rem;margin-bottom:6px}
+  .day-grid{gap:2px}
+  .dow-label{font-size:.58rem;padding:2px 0}
+  .day-card{aspect-ratio:auto;padding:3px 1px;min-height:38px;border-radius:6px;justify-content:center;gap:0}
+  .day-card .day-num{font-size:.75rem;font-weight:700}
+  .day-card .topic-icon{font-size:.6rem;margin-top:0;line-height:1}
+  .day-card .topic-tag{display:none}
+  .day-card.completed::after{top:1px;right:2px;font-size:.55rem}
+  .day-card.today{border-width:1.5px}
+  .modal{max-width:100%;padding:18px;border-radius:0;max-height:100vh}
+  .modal h2{font-size:1.05rem}
+  .modal .modal-date{font-size:.75rem}
+  .modal .modal-topic{font-size:.78rem}
+  .modal .modal-subtopic{font-size:.9rem}
+  .modal textarea{font-size:.8rem;height:90px}
+  .check-row span{font-size:.82rem}
+  .scroll-today{bottom:16px;right:10px;width:38px;height:38px;font-size:1rem}
+  footer{font-size:.7rem;padding:20px 0 70px}
 }
 </style>
 </head>
