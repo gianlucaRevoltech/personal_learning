@@ -101,11 +101,28 @@ footer{text-align:center;color:var(--text2);font-size:.75rem;padding:24px 0}
   <input type="text" id="searchNotes" placeholder="Cerca nelle note..." />
   <button class="btn btn-outline btn-sm" id="btnExport" onclick="exportData()" title="Scarica i progressi come file JSON">Esporta</button>
   <button class="btn btn-outline btn-sm" id="btnImport" onclick="importData()" title="Carica progressi da file JSON">Importa</button>
+  <button class="btn btn-sm" id="btnSync" onclick="syncNow()" title="Sincronizza con GitHub Gist">Sync</button>
+  <button class="btn btn-outline btn-sm" id="btnToken" onclick="openTokenModal()" title="Configura token GitHub per sync cloud">Token</button>
   <span id="syncStatus" style="font-size:.75rem;margin-left:8px;color:var(--text2);"></span>
   <button class="btn btn-outline btn-sm" id="btnReset">Reset</button>
 </div>
 <div id="calendar"></div>
-<footer>Percorso di Crescita 2026 &middot; Salvataggio locale &middot; Nessun dato inviato a server</footer>
+<div class="modal-overlay" id="tokenModalOverlay" style="display:none">
+  <div class="modal" style="max-width:400px;">
+    <h2>Sync con GitHub Gist</h2>
+    <div style="font-size:.82rem;color:var(--text2);margin:8px 0 16px;">
+      Crea un <a href="https://github.com/settings/tokens/new?scopes=gist&description=percorso-crescita" target="_blank" style="color:var(--accent);">token GitHub</a> con solo scope <b>gist</b>, incollalo qui.<br>
+      Il token viene salvato in locale e usato solo per leggere/scrivere il Gist.
+    </div>
+    <label for="tokenInput">Token GitHub</label>
+    <input type="password" id="tokenInput" placeholder="ghp_..." style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-size:.85rem;outline:none;font-family:monospace;" />
+    <div class="actions" style="margin-top:16px;">
+      <button class="btn btn-outline" onclick="document.getElementById('tokenModalOverlay').style.display='none'">Annulla</button>
+      <button class="btn" onclick="saveToken()">Salva & Sync</button>
+    </div>
+  </div>
+</div>
+<footer>Percorso di Crescita 2026 &middot; Salvataggio locale &middot; Sync via GitHub Gist</footer>
 </div>
 <button class="scroll-today" id="btnScrollToday" title="Vai a oggi">Oggi</button>
 <div class="modal-overlay" id="modalOverlay" style="display:none"></div>

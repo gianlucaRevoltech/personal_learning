@@ -3,3 +3,4 @@ gen.py
 merge.py
 topics_test.json
 test_encoding.txt
+__pycache__/
