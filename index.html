@@ -3764,11 +3764,36 @@ function ghHeaders() {
   return t ? { Authorization: "Bearer " + t, Accept: "application/vnd.github+json" } : null;
 }
 
-async function syncFromGist() {
-  const gid = localStorage.getItem(SYNC_GIST_KEY);
+async function findGistId() {
+  // Return stored ID or search GitHub for existing Gist
+  let gid = localStorage.getItem(SYNC_GIST_KEY);
+  if (gid) return gid;
   const hdrs = ghHeaders();
-  if (!gid || !hdrs) {
-    document.getElementById("syncStatus").textContent = !hdrs ? "Nessun token" : "";
+  if (!hdrs) return null;
+  try {
+    // List user gists and find the one with our description
+    const r = await fetch("https://api.github.com/gists?per_page=100", { headers: hdrs });
+    if (!r.ok) return null;
+    const gists = await r.json();
+    const found = gists.find(g => g.description === GIST_DESC);
+    if (found) {
+      localStorage.setItem(SYNC_GIST_KEY, found.id);
+      return found.id;
+    }
+  } catch(e) { console.warn("findGistId err", e); }
+  return null;
+}
+
+async function syncFromGist() {
+  const hdrs = ghHeaders();
+  if (!hdrs) {
+    document.getElementById("syncStatus").textContent = "Nessun token";
+    return;
+  }
+  const gid = await findGistId();
+  if (!gid) {
+    document.getElementById("syncStatus").textContent = "Sync OK";
+    setTimeout(() => { if (document.getElementById("syncStatus").textContent === "Sync OK") document.getElementById("syncStatus").textContent = ""; }, 2000);
     return;
   }
   try {
@@ -3800,7 +3825,7 @@ async function syncToGist() {
   for (const e of schedule) { if (e.completed || e.notes) data[e.key] = { completed: e.completed, notes: e.notes }; }
   const body = { description: GIST_DESC, public: false, files: { "progress.json": { content: JSON.stringify(data) } } };
   try {
-    const gid = localStorage.getItem(SYNC_GIST_KEY);
+    const gid = await findGistId();
     const url = gid ? "https://api.github.com/gists/" + gid : "https://api.github.com/gists";
     const method = gid ? "PATCH" : "POST";
     const r = await fetch(url, { method: method, headers: hdrs, body: JSON.stringify(body) });
