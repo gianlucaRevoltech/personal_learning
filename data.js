@@ -3636,21 +3636,21 @@ function ghHeaders() {
 }
 
 async function findGistId() {
-  // Return stored ID or search GitHub for existing Gist
   let gid = localStorage.getItem(SYNC_GIST_KEY);
   if (gid) return gid;
   const hdrs = ghHeaders();
   if (!hdrs) return null;
   try {
-    // List user gists and find the one with our description
     const r = await fetch("https://api.github.com/gists?per_page=100", { headers: hdrs });
     if (!r.ok) return null;
     const gists = await r.json();
-    const found = gists.find(g => g.description === GIST_DESC);
-    if (found) {
-      localStorage.setItem(SYNC_GIST_KEY, found.id);
-      return found.id;
-    }
+    // Prendi il piu recente tra quelli con la nostra descrizione
+    const matches = gists.filter(g => g.description === GIST_DESC);
+    if (matches.length === 0) return null;
+    matches.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+    gid = matches[0].id;
+    localStorage.setItem(SYNC_GIST_KEY, gid);
+    return gid;
   } catch(e) { console.warn("findGistId err", e); }
   return null;
 }
