@@ -118,6 +118,7 @@ footer{text-align:center;color:var(--text2);font-size:.75rem;padding:24px 0}
     <input type="password" id="tokenInput" placeholder="ghp_..." style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-size:.85rem;outline:none;font-family:monospace;" />
     <div class="actions" style="margin-top:16px;">
       <button class="btn btn-outline" onclick="document.getElementById('tokenModalOverlay').style.display='none'">Annulla</button>
+      <button class="btn btn-outline" onclick="localStorage.removeItem('pc2026_gist_id');localStorage.removeItem('pc2026_gist_token');document.getElementById('tokenInput').value='';alert('Sync resettato. Reinserisci il token.');" style="font-size:.7rem;">Reset</button>
       <button class="btn" onclick="saveToken()">Salva & Sync</button>
     </div>
   </div>
