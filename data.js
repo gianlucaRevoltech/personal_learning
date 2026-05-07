@@ -3638,10 +3638,17 @@ function ghHeaders() {
 async function syncFromGist() {
   const gid = localStorage.getItem(SYNC_GIST_KEY);
   const hdrs = ghHeaders();
-  if (!gid || !hdrs) return;
+  if (!gid || !hdrs) {
+    document.getElementById("syncStatus").textContent = !hdrs ? "Nessun token" : "";
+    return;
+  }
   try {
     const r = await fetch("https://api.github.com/gists/" + gid, { headers: hdrs });
-    if (!r.ok) return;
+    if (!r.ok) {
+      if (r.status === 401 || r.status === 404) { document.getElementById("syncStatus").textContent = "Token errato"; }
+      else { document.getElementById("syncStatus").textContent = "Err sync"; }
+      return;
+    }
     const g = await r.json();
     const raw = g.files && g.files["progress.json"] && g.files["progress.json"].content;
     if (!raw) return;
@@ -3683,6 +3690,11 @@ async function syncToGist() {
 }
 
 function syncNow() {
+  if (!localStorage.getItem(SYNC_TOKEN_KEY)) {
+    document.getElementById("syncStatus").textContent = "Serve token";
+    setTimeout(() => { if (document.getElementById("syncStatus").textContent === "Serve token") document.getElementById("syncStatus").textContent = ""; }, 3000);
+    return;
+  }
   document.getElementById("syncStatus").textContent = "Sync...";
   syncFromGist();
 }
