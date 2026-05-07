@@ -3714,14 +3714,15 @@ async function syncToGist() {
   } catch(e) { console.warn("syncToGist err", e); }
 }
 
-function syncNow() {
+async function syncNow() {
   if (!localStorage.getItem(SYNC_TOKEN_KEY)) {
     document.getElementById("syncStatus").textContent = "Serve token";
     setTimeout(() => { if (document.getElementById("syncStatus").textContent === "Serve token") document.getElementById("syncStatus").textContent = ""; }, 3000);
     return;
   }
   document.getElementById("syncStatus").textContent = "Sync...";
-  syncFromGist();
+  await syncToGist();
+  await syncFromGist();
 }
 
 function openTokenModal() {
